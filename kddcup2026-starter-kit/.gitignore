@@ -1,0 +1,13 @@
+# local config (contains API key)
+configs/*.local.yaml
+
+# generated artifacts
+artifacts/runs/
+
+# python
+__pycache__/
+*.pyc
+.venv/
+configs/react_baseline.runtime.yaml
+configs/react_retry30.local.yaml
+configs/react_retry30.runtime.yaml

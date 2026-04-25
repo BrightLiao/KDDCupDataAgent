@@ -1,0 +1,49 @@
+# ---- Data (large, not in VCS) ----
+data/
+eval_local/
+artifacts/
+kddcup2026-starter-kit/data
+kddcup2026-starter-kit/data/
+kddcup2026-starter-kit/artifacts/
+
+# ---- Secrets (NEVER commit) ----
+.env
+.env.*
+!.env.example
+config/*.pem
+config/*.key
+*.runtime.yaml
+*.local.yaml
+
+# ---- Intermediate / regeneratable ----
+reports/_baseline_summary.json
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.python-version
+dist/
+build/
+*.egg-info/
+
+# ---- uv / pip caches ----
+.uv_cache/
+uv.lock
+
+# ---- Tooling ----
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# ---- Editor / OS ----
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*~
+
+# ---- Claude Code session ----
+.claude/
