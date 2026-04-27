@@ -37,7 +37,9 @@
 │   ├── 比赛简介.md                            # 题型 / 评分 / 难度
 │   ├── 方案调研综述.md                         # CodeAct / GEPA / DS-STAR / RSL-SQL ...
 │   ├── 分难度方案设计.md                       # 4 档难度的分支方案
-│   └── 改进路线图.md                          # L1-L4 路线 + 主流 agent 架构对比
+│   ├── 改进路线图.md                          # L1-L4 路线 + 主流 agent 架构对比
+│   ├── DOCKER_PACKAGING.md                  # docker 打包注意事项（5 红线）
+│   └── EVAL_PLAN_30D.md                     # 30 天评测方法（5 类指标 + 3 seed）
 │
 ├── kddcup2026-starter-kit/                  # 官方 starter-kit + 本地修订（含 retry / max_retries=0 patch）
 │   └── src/data_agent_baseline/             #   ReAct agent + 8 个 tool（baseline）
@@ -55,8 +57,6 @@
 ├── data_agent_v0/                           # baseline_v1 + L4（planner + 难度路由）
 │   ├── src/data_agent_v0/
 │   ├── configs/v0.example.yaml
-│   ├── DOCKER_PACKAGING.md                  # docker 打包注意事项（5 红线）
-│   ├── EVAL_PLAN_30D.md                     # 30 天评测方法（5 类指标 + 3 seed）
 │   └── run_v0.sh
 │
 ├── tools/agent_diagnose/                    # FastAPI + Jinja2 + HTMX 诊断面板
@@ -126,7 +126,7 @@ cd data_agent_v0 && ./run_v0.sh
 
 ## 评测方法
 
-完整方法见 [data_agent_v0/EVAL_PLAN_30D.md](data_agent_v0/EVAL_PLAN_30D.md)。核心：**3 seed × 50 题 → 5 类指标聚合**。
+完整方法见 [docs/EVAL_PLAN_30D.md](docs/EVAL_PLAN_30D.md)。核心：**3 seed × 50 题 → 5 类指标聚合**。
 
 ### 单 run 评分
 
@@ -193,7 +193,7 @@ bash data_agent_baseline_v1/submit_pipeline.sh team0042 baseline_v1_$(date +%Y%m
 - **入口动态预算**：[entrypoint.py](data_agent_baseline_v1/entrypoint.py) 按 `max(900, remaining_time / remaining_tasks)` 分配，easy 优先排序，12h - 30min 留 buffer
 - **网络受限镜像**：[Dockerfile](data_agent_baseline_v1/Dockerfile) 装 `mirrors.aliyun.com` PyPI mirror + BuildKit cache mount，国内服务器（Ali4KDD）build context = 988 KB / wheels 跨 build 复用
 
-更详细的 5 红线说明：[data_agent_v0/DOCKER_PACKAGING.md](data_agent_v0/DOCKER_PACKAGING.md)。
+更详细的 5 红线说明：[docs/DOCKER_PACKAGING.md](docs/DOCKER_PACKAGING.md)。
 
 ---
 
@@ -222,8 +222,8 @@ uv sync && ./run_diagnose.sh    # uvicorn :8000
 - 评测协议、列 multiset 比对的精确定义 → [docs/比赛简介.md](docs/比赛简介.md)
 - 2024–2026 相关工作综述（CodeAct / GEPA / DS-STAR / RSL-SQL / HEAR / AdaDocVQA）→ [docs/方案调研综述.md](docs/方案调研综述.md)
 - 4 层改进路线 + 主流 agent 架构对比 → [docs/改进路线图.md](docs/改进路线图.md)
-- 30 天评测方法 (5 类指标 / 3 seed / diff 阈值) → [data_agent_v0/EVAL_PLAN_30D.md](data_agent_v0/EVAL_PLAN_30D.md)
-- Docker 打包 5 红线 + 子进程 / SIGALRM / max_retries 设计 → [data_agent_v0/DOCKER_PACKAGING.md](data_agent_v0/DOCKER_PACKAGING.md)
+- 30 天评测方法 (5 类指标 / 3 seed / diff 阈值) → [docs/EVAL_PLAN_30D.md](docs/EVAL_PLAN_30D.md)
+- Docker 打包 5 红线 + 子进程 / SIGALRM / max_retries 设计 → [docs/DOCKER_PACKAGING.md](docs/DOCKER_PACKAGING.md)
 - Baseline 架构图 + 失败模式分析 → [reports/baseline_architecture.html](reports/baseline_architecture.html)
 
 ---
