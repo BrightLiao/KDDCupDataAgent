@@ -4,28 +4,41 @@
 {% block content %}
 <div class="panel">
   <div class="flex-between">
-    <h2>Run KPIs</h2>
-    <span class="text-dim text-mono">{{ kpis_list|length }} / {{ runs|length }} runs scored</span>
+    <h2>各次运行核心指标 · 仅展示完整跑完 {{ expected_n }} 题的 run</h2>
+    <span class="text-dim text-mono">
+      {{ kpis_list|length }} 个完整 run
+      {% if n_incomplete > 0 %}<span class="text-dim">· 已隐藏 {{ n_incomplete }} 个不完整 run</span>{% endif %}
+    </span>
   </div>
-  {% if not kpis_list %}
-    <div class="empty">还没有任何 run 完成评分。先跑 baseline 或 v0 的 benchmark。</div>
-  {% endif %}
-  {% for kpis in kpis_list %}
-    {% include "partials/kpi_row.html" %}
-  {% endfor %}
+  {% include "partials/run_table.html" %}
 </div>
+
+{% if agg_list %}
+<div class="panel">
+  <div class="flex-between">
+    <h2>各类智能体 — 核心指标对比（多 seed 均值）</h2>
+    <span class="text-dim">▲ 进步 · ▼ 退步（相对前一档）</span>
+  </div>
+  <div class="agent-card-row">
+    {% for agg in agg_list %}
+      {% set prev_agg = agg_list[loop.index0 - 1] if loop.index0 > 0 else None %}
+      {% include "partials/agent_summary_card.html" %}
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
 
 <div class="panel">
   <div class="flex-between">
-    <h2>Per-task Score Matrix · {{ filtered_task_ids|length }} / {{ all_task_ids|length }} tasks</h2>
+    <h2>逐题得分矩阵 · {{ filtered_task_ids|length }} / {{ all_task_ids|length }} 题</h2>
     <span class="text-dim">点击单元格进入回放</span>
   </div>
 
   <div class="chips">
     {% set modes = [
       ('all', '全部'),
-      ('regressions', '回归 (v0 < baseline)'),
-      ('improvements', '进步 (v0 > baseline)'),
+      ('regressions', '回归 (challenger < reference)'),
+      ('improvements', '进步 (challenger > reference)'),
       ('both_zero', '都为 0'),
       ('disagreements', '分歧 > 0.3'),
     ] %}

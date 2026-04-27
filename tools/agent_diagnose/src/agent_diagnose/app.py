@@ -27,10 +27,14 @@ from agent_diagnose.normalize import detect_agent_kind, normalize_steps
 from agent_diagnose.scoring import score_run_lazy
 from agent_diagnose.stats import (
     RunKPIs,
+    agent_kind_color_class,
+    aggregate_by_agent_kind,
     compute_run_kpis,
-    filter_task_ids,
-    pick_reference_and_challenger,
+    filter_task_ids_by_kind,
+    kind_score_matrix,
+    pick_reference_and_challenger_kinds,
     score_cell_class,
+    sort_kpis_by_kind,
     task_difficulty_map,
     task_score_matrix,
 )
@@ -43,6 +47,7 @@ app = FastAPI(title="Agent Diagnose", version="0.1.0")
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 templates.env.globals["score_cell_class"] = score_cell_class
+templates.env.globals["agent_kind_color_class"] = agent_kind_color_class
 
 
 @app.get("/healthz", response_class=HTMLResponse)
@@ -61,27 +66,39 @@ def root() -> RedirectResponse:
 
 def _build_overview_context(filter_mode: str) -> dict:
     runs = discover_runs()
-    kpis_list: list[RunKPIs] = []
+    all_task_ids = list_all_task_ids()
+    expected_n = len(all_task_ids) or 50  # 完整 run 的题数（demo = 50）
+
+    raw_kpis: list[RunKPIs] = []
     for run in runs:
         k = compute_run_kpis(run)
         if k is not None:
-            kpis_list.append(k)
-    matrix = task_score_matrix(kpis_list)
+            raw_kpis.append(k)
+    # 仅保留完整跑完 expected_n 题的 run，其余隐藏（不列、不参与均值）
+    kpis_list = [k for k in raw_kpis if k.n_tasks == expected_n]
+    n_incomplete = len(raw_kpis) - len(kpis_list)
+
+    kpis_list = sort_kpis_by_kind(kpis_list)
+    agg_list = aggregate_by_agent_kind(kpis_list)
     difficulty_map = task_difficulty_map(kpis_list)
-    reference, challenger = pick_reference_and_challenger(kpis_list)
-    all_task_ids = list_all_task_ids()
-    filtered = filter_task_ids(all_task_ids, matrix, reference, challenger, filter_mode)
+    kind_matrix = kind_score_matrix(kpis_list)
+    ref_kind, chg_kind = pick_reference_and_challenger_kinds(agg_list)
+    filtered = filter_task_ids_by_kind(all_task_ids, kind_matrix, ref_kind, chg_kind, filter_mode)
+    kinds_for_columns = [a.agent_kind for a in agg_list]
     return {
         "runs": runs,
         "kpis_list": kpis_list,
-        "matrix": matrix,
+        "agg_list": agg_list,
+        "kind_matrix": kind_matrix,
         "difficulty_map": difficulty_map,
-        "reference_run_id": reference.run.run_id if reference else None,
-        "challenger_run_id": challenger.run.run_id if challenger else None,
+        "reference_kind": ref_kind,
+        "challenger_kind": chg_kind,
         "all_task_ids": all_task_ids,
         "filtered_task_ids": filtered,
         "filter_mode": filter_mode,
-        "runs_for_columns": [k.run for k in kpis_list],
+        "kinds_for_columns": kinds_for_columns,
+        "expected_n": expected_n,
+        "n_incomplete": n_incomplete,
     }
 
 
@@ -131,12 +148,13 @@ def task_replay(request: Request, task_id: str, run: str = ""):
         )
 
     agent_kind = selected_run.agent_kind or detect_agent_kind(trace)
-    steps = normalize_steps(trace, agent_kind)
     v0_meta = trace.get("v0_meta")
 
     task_input = load_task_input(task_id)
     knowledge_md = task_input.get("knowledge_md")
     knowledge_html = md_to_html(knowledge_md) if knowledge_md else None
+
+    steps = normalize_steps(trace, agent_kind, task_input=task_input)
 
     pred = load_prediction_csv(selected_run.run_id, task_id)
     gold = load_gold_csv(task_id)

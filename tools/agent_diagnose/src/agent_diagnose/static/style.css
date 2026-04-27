@@ -147,7 +147,11 @@ main {
   color: var(--text-dim);
 }
 
-/* Score matrix */
+/* Score matrix — wrapped in .matrix-scroll so it never overflows the panel */
+.matrix-scroll {
+  overflow-x: auto;
+  max-width: 100%;
+}
 table.matrix {
   border-collapse: collapse;
   width: 100%;
@@ -178,11 +182,18 @@ table.matrix td.task-col {
 table.matrix th.task-col { background: var(--gray-bg); z-index: 3; }
 
 .score-cell {
-  display: block;
-  padding: 4px 6px;
+  display: inline-block;
+  padding: 4px 10px;
   border-radius: 4px;
   font-weight: 500;
-  min-width: 56px;
+  min-width: 64px;
+  text-align: center;
+}
+.score-cell .cell-n {
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-left: 4px;
+  font-weight: 400;
 }
 .score-cell.s-perfect { background: var(--ok-bg); color: var(--ok); }
 .score-cell.s-partial { background: var(--warn-bg); color: var(--warn); }
@@ -459,3 +470,263 @@ details[open] > summary { margin-bottom: 6px; }
 .delta-up { color: var(--ok); font-weight: 600; }
 .delta-down { color: var(--fail); font-weight: 600; }
 .delta-flat { color: var(--text-dim); }
+
+/* ========== Overview run table ========== */
+table.run-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+table.run-table th, table.run-table td {
+  border-bottom: 1px solid var(--border);
+  padding: 8px 10px;
+  text-align: left;
+}
+table.run-table th {
+  background: var(--gray-bg);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-dim);
+  position: sticky;
+  top: 56px;
+  z-index: 1;
+}
+table.run-table td.num, table.run-table th:nth-child(n+3) { text-align: right; font-family: "JetBrains Mono", monospace; }
+table.run-table td.bold { font-weight: 600; }
+table.run-table tbody tr:hover { background: var(--accent-dim); }
+
+/* Agent kind badge — color families
+   baseline*  → blue family (deeper for higher version)
+   agent_v*   → purple family */
+.kind-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: "JetBrains Mono", monospace;
+  letter-spacing: 0.02em;
+  border: 1px solid transparent;
+}
+.kind-baseline    { background: #e0f2fe; color: #075985; border-color: #bae6fd; }
+.kind-baseline-v1 { background: #bae6fd; color: #0c4a6e; border-color: #7dd3fc; }
+.kind-baseline-v2 { background: #7dd3fc; color: #ffffff; border-color: #38bdf8; }
+.kind-agent-v0    { background: #ede9fe; color: #5b21b6; border-color: #ddd6fe; }
+.kind-agent-v1    { background: #ddd6fe; color: #4c1d95; border-color: #c4b5fd; }
+
+/* ========== Agent summary cards (one per row) ========== */
+.agent-card-row {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.agent-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-top: 4px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  box-shadow: var(--shadow);
+}
+.agent-card.kind-baseline    { border-top-color: #0284c7; }
+.agent-card.kind-baseline-v1 { border-top-color: #0369a1; }
+.agent-card.kind-baseline-v2 { border-top-color: #075985; }
+.agent-card.kind-agent-v0    { border-top-color: #7c3aed; }
+.agent-card.kind-agent-v1    { border-top-color: #6d28d9; }
+
+.agent-card-head {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 10px;
+}
+.agent-card-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.agent-card-grid .dim { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.04em; }
+.agent-card-grid .big { font-size: 18px; font-weight: 700; font-family: "JetBrains Mono", monospace; }
+.agent-card-grid .sub { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+.agent-card-diff {
+  display: flex; gap: 6px; flex-wrap: wrap; padding-top: 8px; border-top: 1px dashed var(--border);
+}
+.diff-pill {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: "JetBrains Mono", monospace;
+}
+/* ⓘ inline help marker */
+.info-tip {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  line-height: 14px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  cursor: help;
+  background: var(--panel);
+  margin-left: 2px;
+  user-select: none;
+}
+.info-tip:hover { color: var(--accent); border-color: var(--accent); }
+
+.diff-pill.easy    { background: var(--easy-bg); color: var(--easy-fg); }
+.diff-pill.medium  { background: var(--medium-bg); color: var(--medium-fg); }
+.diff-pill.hard    { background: var(--hard-bg); color: var(--hard-fg); }
+.diff-pill.extreme { background: var(--extreme-bg); color: var(--extreme-fg); }
+
+/* ========== Step card sections (① ② ③ ④ ⑤) ========== */
+.step-section .section-label.inline {
+  display: inline-block;
+  margin-bottom: 0;
+}
+.step-intent {
+  background: linear-gradient(180deg, #fffbeb 0%, var(--panel) 100%);
+}
+.step-intent .intent-text {
+  font-size: 14px;
+  font-style: italic;
+  color: var(--text);
+  padding: 4px 8px;
+  border-left: 3px solid #f59e0b;
+  background: var(--panel);
+  border-radius: 0 4px 4px 0;
+}
+
+/* ② LLM Input messages */
+.msg-list { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+.msg {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+}
+.msg-system    { border-left: 3px solid var(--text-dim); }
+.msg-user      { border-left: 3px solid var(--accent); }
+.msg-assistant { border-left: 3px solid var(--accent-2); }
+.msg > details > summary {
+  padding: 6px 10px;
+  background: var(--gray-bg);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+.msg-role { font-weight: 600; font-family: "JetBrains Mono", monospace; font-size: 12px; }
+.msg-body {
+  margin: 0;
+  padding: 10px 12px;
+  background: var(--panel);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  max-height: 320px;
+  overflow-y: auto;
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+}
+
+/* ③ Thinking */
+.thinking {
+  border-left: 3px solid var(--accent-2);
+  background: #faf5ff;
+  padding: 8px 12px;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin-bottom: 8px;
+}
+.thinking-tag {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent-2);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+.thinking-body {
+  font-style: italic;
+  color: var(--text);
+  white-space: pre-wrap;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* ④ Code — Prism container override */
+.step-section pre.code-block {
+  margin: 0;
+  padding: 0;
+  background: #f8f8f8;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  max-height: 480px;
+  overflow-y: auto;
+}
+.step-section pre.code-block > code.language-python {
+  display: block;
+  padding: 10px 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  background: transparent !important;
+  white-space: pre-wrap !important;
+  word-wrap: break-word !important;
+}
+.copy-btn {
+  font-size: 11px;
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--text-dim);
+  font-family: inherit;
+}
+.copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ⑤ Execution grid */
+.exec-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+@media (max-width: 1100px) { .exec-grid { grid-template-columns: 1fr; } }
+.exec-grid .exec-col {
+  background: var(--gray-bg);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.exec-grid .exec-tag {
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-dim);
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+}
+.exec-grid pre {
+  margin: 0;
+  padding: 8px 12px;
+  background: var(--panel);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  max-height: 360px;
+  overflow-y: auto;
+  font-size: 12px;
+}
+.exec-grid .exec-err pre {
+  background: var(--fail-bg);
+  color: var(--fail);
+}
+.exec-grid .exec-err {
+  border-color: var(--fail);
+}
+.exec-grid .exec-err .exec-tag {
+  color: var(--fail);
+  background: var(--fail-bg);
+}

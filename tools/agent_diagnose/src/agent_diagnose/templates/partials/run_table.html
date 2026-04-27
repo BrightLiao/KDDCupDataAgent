@@ -1,0 +1,46 @@
+{# Per-run KPI table（仅完整跑完 expected_n 题的 run）。
+   Expects: kpis_list (list[RunKPIs]), agent_kind_color_class (filter) #}
+<table class="run-table">
+  <thead>
+    <tr>
+      <th>智能体</th>
+      <th>运行实例</th>
+      <th>题数</th>
+      <th>微观分 <span class="info-tip" title="micro = 所有题得分的算术平均（每道题权重相同）。评测方排行榜按这个算。简单题多会被简单题摊高。">ⓘ</span></th>
+      <th>宏观分 <span class="info-tip" title="macro = 先按难度组算组内均值，再对 4 个难度组（easy/medium/hard/extreme）取均值。难度组等权，hard/extreme 权重相对放大。">ⓘ</span></th>
+      <th>提交率 <span class="info-tip" title="50 题中至少写出一份 prediction.csv 的比例。崩溃 / timeout / 解析失败 都不算提交。">ⓘ</span></th>
+      <th>错误步率 <span class="info-tip" title="所有 step 中 ok=False 的比例（含工具报错 / 代码异常 / 解析失败）。">ⓘ</span></th>
+      <th>平均步数 <span class="info-tip" title="单题平均消耗多少 step（一次 LLM 调用 = 一个 step）。">ⓘ</span></th>
+      <th>简单</th>
+      <th>中等</th>
+      <th>困难</th>
+      <th>极难</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% if not kpis_list %}
+    <tr><td colspan="12" class="empty">没有完整跑完 50 题的 run。先跑 baseline / baseline_v1 / agent_v0 的全量 benchmark。</td></tr>
+  {% endif %}
+  {% for k in kpis_list %}
+    {% set pd = k.per_difficulty %}
+    <tr>
+      <td><span class="kind-badge {{ agent_kind_color_class(k.run.agent_kind) }}">{{ k.run.agent_kind }}</span></td>
+      <td class="text-mono">{{ k.run.run_id }}</td>
+      <td class="num">{{ k.n_tasks }}</td>
+      <td class="num bold">{{ "%.4f"|format(k.micro) }}</td>
+      <td class="num bold">{{ "%.4f"|format(k.macro) }}</td>
+      <td class="num">{{ "%.0f%%"|format(k.submission_rate * 100) }}</td>
+      <td class="num">{{ "%.1f%%"|format(k.error_step_rate * 100) }}</td>
+      <td class="num">{{ "%.1f"|format(k.avg_steps) }}</td>
+      {% for diff in ['easy','medium','hard','extreme'] %}
+        {% set entry = pd.get(diff) %}
+        {% if entry %}
+          <td class="num">{{ "%.3f"|format(entry.mean_score) }}<span class="text-dim" style="font-size:11px;"> ({{ entry.n }})</span></td>
+        {% else %}
+          <td class="text-dim num">—</td>
+        {% endif %}
+      {% endfor %}
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>

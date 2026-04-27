@@ -24,7 +24,7 @@ from agent_diagnose.config import (
 @dataclass(frozen=True)
 class RunRef:
     run_id: str
-    agent_kind: str  # "baseline" | "v0"
+    agent_kind: str  # baseline / baseline_v1 / agent_v0 / ...  详见 config.AGENT_KIND_ORDER
     runs_dir: Path  # 包含 task_<id>/ 的目录
     scored_json: Path  # reports/<run_id>_scored.json，可能不存在
 

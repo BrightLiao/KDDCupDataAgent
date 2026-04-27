@@ -12,11 +12,26 @@ _REPO_PARENT_PATH = str(REPO_ROOT)
 if _REPO_PARENT_PATH not in sys.path:
     sys.path.insert(0, _REPO_PARENT_PATH)
 
-# Run sources (extend here when new agents are added)
+# Run sources (extend here when new agents are added).
+# 命名规范：
+#   baseline       原始 baseline（react + JSON action）
+#   baseline_v*    在 baseline 上修问题的迭代（CodeAct + 超参等）
+#   agent_v*       架构换代后的版本（v0 = 架构重写第 0 版）
 RUN_SOURCES: list[tuple[str, Path]] = [
     ("baseline", REPO_ROOT / "kddcup2026-starter-kit" / "artifacts" / "runs"),
     ("baseline_v1", REPO_ROOT / "data_agent_baseline_v1" / "artifacts" / "runs"),
-    ("v0", REPO_ROOT / "data_agent_v0" / "artifacts" / "runs"),
+    ("baseline_v2", REPO_ROOT / "data_agent_baseline_v2" / "artifacts" / "runs"),
+    ("agent_v0", REPO_ROOT / "data_agent_v0" / "artifacts" / "runs"),
+    ("agent_v1", REPO_ROOT / "data_agent_v1" / "artifacts" / "runs"),
+]
+
+# Order used by both the overview table and the agent-summary cards.
+AGENT_KIND_ORDER: list[str] = [
+    "baseline",
+    "baseline_v1",
+    "baseline_v2",
+    "agent_v0",
+    "agent_v1",
 ]
 
 REPORTS_DIR = REPO_ROOT / "reports"
@@ -27,6 +42,7 @@ DATA_OUTPUT_DIR = REPO_ROOT / "data" / "demo" / "public" / "output"
 __all__ = [
     "REPO_ROOT",
     "RUN_SOURCES",
+    "AGENT_KIND_ORDER",
     "REPORTS_DIR",
     "DATA_INPUT_DIR",
     "DATA_OUTPUT_DIR",

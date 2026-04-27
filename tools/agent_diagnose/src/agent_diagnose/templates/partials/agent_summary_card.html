@@ -1,0 +1,69 @@
+{# 单个 agent kind 的五维聚合卡。
+   Expects: agg (AggKPIs), prev_agg (AggKPIs|None) — 用来算 ▲ 升降箭头. #}
+{% macro fmt_delta(now, prev, fmt='%.4f', better='up') -%}
+  {% if prev is none %}
+    <span class="delta-flat">—</span>
+  {% else %}
+    {% set d = now - prev %}
+    {% if d > 0.0001 %}
+      <span class="delta-{% if better == 'up' %}up{% else %}down{% endif %}">▲ +{{ fmt|format(d) }}</span>
+    {% elif d < -0.0001 %}
+      <span class="delta-{% if better == 'up' %}down{% else %}up{% endif %}">▼ {{ fmt|format(d) }}</span>
+    {% else %}
+      <span class="delta-flat">—</span>
+    {% endif %}
+  {% endif %}
+{%- endmacro %}
+
+<div class="agent-card {{ agent_kind_color_class(agg.agent_kind) }}">
+  <div class="agent-card-head">
+    <span class="kind-badge {{ agent_kind_color_class(agg.agent_kind) }}">{{ agg.agent_kind }}</span>
+    <span class="text-dim text-mono">{{ agg.n_runs }} 个 seed</span>
+  </div>
+
+  <div class="agent-card-grid">
+    <div>
+      <div class="dim">微观分 <span class="info-tip" title="micro = 所有题得分的算术平均（每道题权重相同）。评测方排行榜按这个算。简单题多会被简单题摊高。">ⓘ</span></div>
+      <div class="big">{{ "%.4f"|format(agg.micro_mean) }}</div>
+      <div class="sub">
+        ± {{ "%.4f"|format(agg.micro_std) }}
+        · {{ fmt_delta(agg.micro_mean, prev_agg.micro_mean if prev_agg else none) }}
+      </div>
+    </div>
+    <div>
+      <div class="dim">宏观分 <span class="info-tip" title="macro = 先按难度组算组内均值，再对 4 个难度组（easy/medium/hard/extreme）取均值。难度组等权，hard/extreme 权重相对放大。">ⓘ</span></div>
+      <div class="big">{{ "%.4f"|format(agg.macro_mean) }}</div>
+      <div class="sub">
+        ± {{ "%.4f"|format(agg.macro_std) }}
+        · {{ fmt_delta(agg.macro_mean, prev_agg.macro_mean if prev_agg else none) }}
+      </div>
+    </div>
+    <div>
+      <div class="dim">提交率 <span class="info-tip" title="50 题中至少写出一份 prediction.csv 的比例。崩溃 / timeout / 解析失败 都不算提交。">ⓘ</span></div>
+      <div class="big">{{ "%.0f%%"|format(agg.submission_rate_mean * 100) }}</div>
+      <div class="sub">{{ fmt_delta(agg.submission_rate_mean, prev_agg.submission_rate_mean if prev_agg else none, '%.2f') }}</div>
+    </div>
+    <div>
+      <div class="dim">错误步率 <span class="info-tip" title="所有 step 中 ok=False 的比例（含工具报错 / 代码异常 / 解析失败）。低 = 模型出码稳定，高 = 多走弯路。">ⓘ</span></div>
+      <div class="big">{{ "%.1f%%"|format(agg.error_step_rate_mean * 100) }}</div>
+      <div class="sub">{{ fmt_delta(agg.error_step_rate_mean, prev_agg.error_step_rate_mean if prev_agg else none, '%.3f', 'down') }}</div>
+    </div>
+    <div>
+      <div class="dim">平均步数 <span class="info-tip" title="单题平均消耗多少 step（一次 LLM 调用 = 一个 step）。低 = 直接，高 = 探索 / 反复。">ⓘ</span></div>
+      <div class="big">{{ "%.1f"|format(agg.avg_steps_mean) }}</div>
+      <div class="sub">{{ fmt_delta(agg.avg_steps_mean, prev_agg.avg_steps_mean if prev_agg else none, '%.2f', 'down') }}</div>
+    </div>
+  </div>
+
+  {% if agg.per_difficulty_mean %}
+  <div class="agent-card-diff">
+    {% set diff_zh = {'easy': '简单', 'medium': '中等', 'hard': '困难', 'extreme': '极难'} %}
+    {% for diff in ['easy','medium','hard','extreme'] %}
+      {% set v = agg.per_difficulty_mean.get(diff) %}
+      {% if v is not none %}
+        <span class="diff-pill {{ diff }}">{{ diff_zh[diff] }} {{ "%.3f"|format(v) }}</span>
+      {% endif %}
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>

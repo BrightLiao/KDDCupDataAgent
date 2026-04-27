@@ -1,4 +1,5 @@
-{# Single step card. Expects: step (DisplayStep), step_anchor (str) #}
+{# Single step card — five sections.
+   Expects: step (DisplayStep), step_anchor (str) #}
 {% set kind_cls = 'submit' if step.submitted else ('ok' if step.ok else 'fail') %}
 <div id="{{ step_anchor }}" class="step-card {{ kind_cls }}">
   <div class="step-header">
@@ -11,41 +12,101 @@
     {% else %}
       <span class="badge fail">fail</span>
     {% endif %}
+    {% if step.elapsed_seconds is not none %}
+      <span class="text-dim text-mono" style="margin-left: auto; font-size: 12px;">
+        {{ "%.2f"|format(step.elapsed_seconds) }}s
+      </span>
+    {% endif %}
   </div>
 
-  {% if step.code %}
-  <div class="step-section">
-    <div class="section-label">Code</div>
-    <pre class="text-mono">{{ step.code }}</pre>
-  </div>
-  {% endif %}
-
-  {% if step.output %}
-  <div class="step-section">
-    <div class="section-label">Output</div>
-    <pre class="text-mono">{{ step.output[:4000] }}{% if step.output|length > 4000 %}
-
-… [truncated, total {{ step.output|length }} chars]{% endif %}</pre>
+  {# ① Intent #}
+  {% if step.intent %}
+  <div class="step-section step-intent">
+    <div class="section-label">① Intent</div>
+    <div class="intent-text">{{ step.intent }}</div>
   </div>
   {% endif %}
 
-  {% if step.error %}
-  <div class="step-section error">
-    <div class="section-label">Error / Traceback</div>
-    <pre class="text-mono">{{ step.error[:4000] }}{% if step.error|length > 4000 %}
-
-… [truncated, total {{ step.error|length }} chars]{% endif %}</pre>
-  </div>
-  {% endif %}
-
-  {% if step.raw_response %}
+  {# ② LLM Input — collapsed by default; show how many messages in summary #}
+  {% if step.prompt_messages %}
   <div class="step-section">
     <details>
-      <summary>Raw LLM response ({{ step.raw_response|length }} chars)</summary>
+      <summary>
+        <span class="section-label inline">② LLM Input</span>
+        {% set ns = namespace(total=0) %}
+        {% for m in step.prompt_messages %}{% set ns.total = ns.total + (m.content|length) %}{% endfor %}
+        <span class="text-dim" style="margin-left: 8px;">
+          {{ step.prompt_messages|length }} messages · {{ ns.total }} chars
+          · <span title="Reconstructed by diagnose layer from trace + prompt builders, not stored at runtime">ⓘ reconstructed</span>
+        </span>
+      </summary>
+      <div class="msg-list">
+        {% for m in step.prompt_messages %}
+        <div class="msg msg-{{ m.role }}">
+          <details {% if loop.last %}open{% endif %}>
+            <summary>
+              <span class="msg-role">{{ m.label }}</span>
+              <span class="text-dim" style="margin-left: 8px; font-size: 11px;">{{ m.content|length }} chars</span>
+            </summary>
+            <pre class="text-mono msg-body">{{ m.content }}</pre>
+          </details>
+        </div>
+        {% endfor %}
+      </div>
+    </details>
+  </div>
+  {% endif %}
+
+  {# ③ LLM Output — thinking + raw response #}
+  <div class="step-section">
+    <div class="section-label">③ LLM Output</div>
+    {% if step.thinking %}
+    <div class="thinking">
+      <div class="thinking-tag">Thinking</div>
+      <div class="thinking-body">{{ step.thinking }}</div>
+    </div>
+    {% endif %}
+    <details {% if not step.thinking %}open{% endif %}>
+      <summary>Raw response ({{ step.raw_response|length }} chars)</summary>
       <pre class="text-mono">{{ step.raw_response[:8000] }}{% if step.raw_response|length > 8000 %}
 
-… [truncated]{% endif %}</pre>
+… [truncated, total {{ step.raw_response|length }} chars]{% endif %}</pre>
     </details>
+  </div>
+
+  {# ④ Code — Prism highlighted #}
+  {% if step.code %}
+  <div class="step-section">
+    <div class="section-label flex-between">
+      <span>④ Code</span>
+      <button class="copy-btn" data-copy-target="#{{ step_anchor }}-code">Copy</button>
+    </div>
+    <pre class="code-block"><code id="{{ step_anchor }}-code" class="language-python">{{ step.code }}</code></pre>
+  </div>
+  {% endif %}
+
+  {# ⑤ Execution Result — stdout / stderr side-by-side #}
+  {% if step.output or step.error %}
+  <div class="step-section">
+    <div class="section-label">⑤ Execution Result</div>
+    <div class="exec-grid">
+      {% if step.output %}
+      <div class="exec-col">
+        <div class="exec-tag">stdout</div>
+        <pre class="text-mono">{{ step.output[:4000] }}{% if step.output|length > 4000 %}
+
+… [truncated, total {{ step.output|length }} chars]{% endif %}</pre>
+      </div>
+      {% endif %}
+      {% if step.error %}
+      <div class="exec-col exec-err">
+        <div class="exec-tag">stderr / traceback</div>
+        <pre class="text-mono">{{ step.error[:4000] }}{% if step.error|length > 4000 %}
+
+… [truncated, total {{ step.error|length }} chars]{% endif %}</pre>
+      </div>
+      {% endif %}
+    </div>
   </div>
   {% endif %}
 </div>

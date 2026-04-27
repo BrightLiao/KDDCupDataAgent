@@ -1,9 +1,11 @@
-"""Run-level KPI 派生 + 任务级跨 run 比对。"""
+"""Run-level KPI 派生 + 任务级跨 run 比对 + agent-kind 五维聚合。"""
 from __future__ import annotations
 
-from dataclasses import dataclass
+import math
+from dataclasses import dataclass, field
 from typing import Any
 
+from agent_diagnose.config import AGENT_KIND_ORDER
 from agent_diagnose.data import RunRef, load_trace
 from agent_diagnose.scoring import score_run_lazy
 
@@ -82,10 +84,19 @@ def task_difficulty_map(kpis_list: list[RunKPIs]) -> dict[str, str]:
 def pick_reference_and_challenger(
     kpis_list: list[RunKPIs],
 ) -> tuple[RunKPIs | None, RunKPIs | None]:
-    """规则：最新 baseline 为 reference，最新非 baseline 为 challenger。"""
-    baselines = [k for k in kpis_list if k.run.agent_kind == "baseline"]
-    challengers = [k for k in kpis_list if k.run.agent_kind != "baseline"]
-    return (baselines[0] if baselines else None, challengers[0] if challengers else None)
+    """规则：reference 选 AGENT_KIND_ORDER 里出现最早的 kind 的最新 run；
+    challenger 选 AGENT_KIND_ORDER 里出现最晚的 kind 的最新 run。两者不同 kind 才返回。"""
+    if not kpis_list:
+        return None, None
+    by_kind: dict[str, list[RunKPIs]] = {}
+    for k in kpis_list:
+        by_kind.setdefault(k.run.agent_kind, []).append(k)
+    ordered_kinds = [k for k in AGENT_KIND_ORDER if k in by_kind]
+    if len(ordered_kinds) < 2:
+        return None, None
+    ref_kind = ordered_kinds[0]
+    chg_kind = ordered_kinds[-1]
+    return by_kind[ref_kind][0], by_kind[chg_kind][0]
 
 
 def filter_task_ids(
@@ -95,7 +106,7 @@ def filter_task_ids(
     challenger: RunKPIs | None,
     mode: str,
 ) -> list[str]:
-    """按筛选模式返回 task_id 子集。"""
+    """按筛选模式返回 task_id 子集（run 级，保留兼容）。"""
     if mode == "all" or mode not in {"regressions", "improvements", "both_zero", "disagreements"}:
         return all_task_ids
     if reference is None or challenger is None:
@@ -123,6 +134,92 @@ def filter_task_ids(
     return out
 
 
+# ---------------------------------------------------------------------------
+# Kind-level matrix（按 agent_kind 聚合多 seed 均值）
+# ---------------------------------------------------------------------------
+
+def kind_score_matrix(
+    kpis_list: list[RunKPIs],
+) -> dict[str, dict[str, dict[str, Any]]]:
+    """{task_id: {agent_kind: {mean_score, n_runs, n_with_pred, representative_run_id, has_prediction}}}
+
+    representative_run_id：该 kind 下命中该 task 的"第一个" run（用于单元格点击跳转回放）。
+    has_prediction：只要该 kind 任一 run 提交过即 True。
+    mean_score：仅对有提交的 run 取均值；全部缺则为 None。
+    """
+    by_kind: dict[str, list[RunKPIs]] = {}
+    for k in kpis_list:
+        by_kind.setdefault(k.run.agent_kind, []).append(k)
+
+    out: dict[str, dict[str, dict[str, Any]]] = {}
+    for kind, members in by_kind.items():
+        for kpi in members:
+            for t in kpi.scored.get("tasks") or []:
+                tid = t["task_id"]
+                cell = out.setdefault(tid, {}).setdefault(kind, {
+                    "_scores": [],
+                    "n_with_pred": 0,
+                    "representative_run_id": None,
+                    "has_prediction": False,
+                    "difficulty": t.get("difficulty") or "",
+                })
+                if t.get("has_prediction"):
+                    cell["_scores"].append(float(t.get("score") or 0))
+                    cell["n_with_pred"] += 1
+                    cell["has_prediction"] = True
+                if cell["representative_run_id"] is None:
+                    cell["representative_run_id"] = kpi.run.run_id
+
+    # finalize means in a separate pass
+    for tid, kinds in out.items():
+        for kind, cell in kinds.items():
+            scores = cell.pop("_scores")
+            cell["mean_score"] = (sum(scores) / len(scores)) if scores else None
+            cell["n_runs"] = len(by_kind[kind])
+    return out
+
+
+def filter_task_ids_by_kind(
+    all_task_ids: list[str],
+    kind_matrix: dict[str, dict[str, dict[str, Any]]],
+    ref_kind: str | None,
+    chg_kind: str | None,
+    mode: str,
+) -> list[str]:
+    """按筛选模式返回 task_id 子集（kind 级）。"""
+    if mode == "all" or mode not in {"regressions", "improvements", "both_zero", "disagreements"}:
+        return all_task_ids
+    if not ref_kind or not chg_kind or ref_kind == chg_kind:
+        return all_task_ids
+    out: list[str] = []
+    for tid in all_task_ids:
+        cells = kind_matrix.get(tid, {})
+        ref = (cells.get(ref_kind) or {}).get("mean_score")
+        chg = (cells.get(chg_kind) or {}).get("mean_score")
+        if mode == "regressions" and ref is not None and chg is not None and ref > chg + 1e-6:
+            out.append(tid)
+        elif mode == "improvements" and ref is not None and chg is not None and chg > ref + 1e-6:
+            out.append(tid)
+        elif mode == "both_zero":
+            scores = [(c.get("mean_score") or 0) for c in cells.values() if c.get("has_prediction")]
+            if scores and all(s == 0 for s in scores):
+                out.append(tid)
+        elif mode == "disagreements":
+            scores = [c["mean_score"] for c in cells.values() if c.get("mean_score") is not None]
+            if scores and (max(scores) - min(scores)) > 0.3:
+                out.append(tid)
+    return out
+
+
+def pick_reference_and_challenger_kinds(
+    agg_list: list["AggKPIs"],
+) -> tuple[str | None, str | None]:
+    """AGENT_KIND_ORDER 上的最早 kind = reference，最晚 kind = challenger。"""
+    if len(agg_list) < 2:
+        return None, None
+    return agg_list[0].agent_kind, agg_list[-1].agent_kind
+
+
 def score_cell_class(score: float | None, has_prediction: bool) -> str:
     if score is None:
         return "s-missing"
@@ -133,3 +230,115 @@ def score_cell_class(score: float | None, has_prediction: bool) -> str:
     if score > 0:
         return "s-partial"
     return "s-zero"
+
+
+# ---------------------------------------------------------------------------
+# Agent-kind level aggregation (五维卡)
+# ---------------------------------------------------------------------------
+
+@dataclass
+class AggKPIs:
+    agent_kind: str
+    n_runs: int
+    runs: list[RunRef] = field(default_factory=list)
+    micro_mean: float = 0.0
+    micro_std: float = 0.0
+    macro_mean: float = 0.0
+    macro_std: float = 0.0
+    submission_rate_mean: float = 0.0
+    error_step_rate_mean: float = 0.0
+    avg_steps_mean: float = 0.0
+    # {difficulty: mean_score}
+    per_difficulty_mean: dict[str, float] = field(default_factory=dict)
+
+
+def _mean_std(xs: list[float]) -> tuple[float, float]:
+    if not xs:
+        return 0.0, 0.0
+    m = sum(xs) / len(xs)
+    if len(xs) <= 1:
+        return m, 0.0
+    var = sum((x - m) ** 2 for x in xs) / (len(xs) - 1)
+    return m, math.sqrt(var)
+
+
+def aggregate_by_agent_kind(kpis_list: list[RunKPIs]) -> list[AggKPIs]:
+    """按 agent_kind 聚合多 seed run，返回按 AGENT_KIND_ORDER 排序的列表。"""
+    by_kind: dict[str, list[RunKPIs]] = {}
+    for k in kpis_list:
+        by_kind.setdefault(k.run.agent_kind, []).append(k)
+
+    agg_list: list[AggKPIs] = []
+    for kind in AGENT_KIND_ORDER:
+        if kind not in by_kind:
+            continue
+        members = by_kind[kind]
+        micros = [m.micro for m in members]
+        macros = [m.macro for m in members]
+        sub_rates = [m.submission_rate for m in members]
+        err_rates = [m.error_step_rate for m in members]
+        avg_steps = [m.avg_steps for m in members]
+        micro_mean, micro_std = _mean_std(micros)
+        macro_mean, macro_std = _mean_std(macros)
+
+        # difficulty mean: weighted by n_tasks per difficulty across runs
+        diff_acc: dict[str, list[float]] = {}
+        for m in members:
+            for d, info in (m.per_difficulty or {}).items():
+                if isinstance(info, dict) and "mean_score" in info:
+                    diff_acc.setdefault(d, []).append(float(info["mean_score"]))
+        per_diff_mean = {d: sum(v) / len(v) for d, v in diff_acc.items() if v}
+
+        agg_list.append(AggKPIs(
+            agent_kind=kind,
+            n_runs=len(members),
+            runs=[m.run for m in members],
+            micro_mean=micro_mean,
+            micro_std=micro_std,
+            macro_mean=macro_mean,
+            macro_std=macro_std,
+            submission_rate_mean=sum(sub_rates) / len(sub_rates),
+            error_step_rate_mean=sum(err_rates) / len(err_rates),
+            avg_steps_mean=sum(avg_steps) / len(avg_steps),
+            per_difficulty_mean=per_diff_mean,
+        ))
+
+    # any kind not in AGENT_KIND_ORDER (forward compat) — append at end
+    for kind, members in by_kind.items():
+        if kind not in AGENT_KIND_ORDER:
+            micros = [m.micro for m in members]
+            macros = [m.macro for m in members]
+            mm, ms = _mean_std(micros)
+            mm2, ms2 = _mean_std(macros)
+            agg_list.append(AggKPIs(
+                agent_kind=kind,
+                n_runs=len(members),
+                runs=[m.run for m in members],
+                micro_mean=mm,
+                micro_std=ms,
+                macro_mean=mm2,
+                macro_std=ms2,
+                submission_rate_mean=sum(m.submission_rate for m in members) / len(members),
+                error_step_rate_mean=sum(m.error_step_rate for m in members) / len(members),
+                avg_steps_mean=sum(m.avg_steps for m in members) / len(members),
+            ))
+    return agg_list
+
+
+def sort_kpis_by_kind(kpis_list: list[RunKPIs]) -> list[RunKPIs]:
+    """按 (AGENT_KIND_ORDER index, run mtime desc) 排，未知 kind 最后。"""
+    order_idx = {k: i for i, k in enumerate(AGENT_KIND_ORDER)}
+    return sorted(
+        kpis_list,
+        key=lambda k: (
+            order_idx.get(k.run.agent_kind, 9999),
+            -k.run.runs_dir.stat().st_mtime if k.run.runs_dir.is_dir() else 0,
+        ),
+    )
+
+
+def agent_kind_color_class(kind: str) -> str:
+    """统一映射到 CSS class，颜色族在 style.css 里定义。
+    baseline 系列蓝色族；agent_v* 系列紫色族。"""
+    safe = kind.replace("_", "-")
+    return f"kind-{safe}"

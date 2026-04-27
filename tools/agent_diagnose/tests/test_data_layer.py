@@ -42,8 +42,8 @@ def test_load_trace_baseline_task_11():
 
 
 def test_load_trace_v0_optional():
-    """v0 trace 含 v0_meta 顶层 key。"""
-    runs = [r for r in discover_runs() if r.agent_kind == "v0"]
+    """agent_v0 trace 含 v0_meta 顶层 key。"""
+    runs = [r for r in discover_runs() if r.agent_kind == "agent_v0"]
     if not runs:
         pytest.skip("no v0 run yet")
     # 找任何已写入的 task

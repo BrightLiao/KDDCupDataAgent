@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Agent Diagnose{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='prism.min.css') }}">
     <script src="{{ url_for('static', path='htmx.min.js') }}" defer></script>
+    <script src="{{ url_for('static', path='prism.min.js') }}" defer></script>
+    <script src="{{ url_for('static', path='prism-python.min.js') }}" defer></script>
+    <script src="{{ url_for('static', path='prism-json.min.js') }}" defer></script>
 </head>
 <body>
     <div class="topbar">
@@ -24,5 +28,25 @@
     <main>
         {% block content %}{% endblock %}
     </main>
+
+    <script>
+      // Re-highlight Prism on HTMX swaps so dynamically-injected code blocks get coloured.
+      document.body.addEventListener('htmx:afterSwap', () => {
+        if (window.Prism) Prism.highlightAll();
+      });
+      // Copy button
+      document.body.addEventListener('click', (ev) => {
+        const btn = ev.target.closest('.copy-btn');
+        if (!btn) return;
+        const sel = btn.dataset.copyTarget;
+        const node = sel ? document.querySelector(sel) : null;
+        if (!node) return;
+        navigator.clipboard.writeText(node.innerText).then(() => {
+          const original = btn.textContent;
+          btn.textContent = 'Copied';
+          setTimeout(() => { btn.textContent = original; }, 1200);
+        });
+      });
+    </script>
 </body>
 </html>

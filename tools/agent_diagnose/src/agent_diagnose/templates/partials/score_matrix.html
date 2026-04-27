@@ -1,20 +1,20 @@
-{# Score matrix tbody only — used both as full-page block and HTMX fragment.
-   Expects: filtered_task_ids, runs_for_columns, matrix, difficulty_map, score_cell_class
-   reference_run_id (str|None), challenger_run_id (str|None) — for diff arrow rendering
+{# Score matrix — agent_kind 列（多 seed 均值）。
+   Expects: filtered_task_ids, kinds_for_columns, kind_matrix, difficulty_map, score_cell_class,
+            reference_kind, challenger_kind, agent_kind_color_class
 #}
+<div class="matrix-scroll">
 <table class="matrix">
   <thead>
     <tr>
-      <th class="task-col">Task</th>
-      <th>Diff</th>
-      {% for run in runs_for_columns %}
+      <th class="task-col">题目</th>
+      <th>难度</th>
+      {% for kind in kinds_for_columns %}
       <th>
-        <div>{{ run.agent_kind }}</div>
-        <div class="text-dim text-mono" style="font-size: 11px; font-weight: 400;">{{ run.run_id }}</div>
+        <span class="kind-badge {{ agent_kind_color_class(kind) }}">{{ kind }}</span>
       </th>
       {% endfor %}
-      {% if reference_run_id and challenger_run_id %}
-      <th>Δ (challenger − reference)</th>
+      {% if reference_kind and challenger_kind and reference_kind != challenger_kind %}
+      <th>Δ（{{ challenger_kind }} − {{ reference_kind }}）</th>
       {% endif %}
     </tr>
   </thead>
@@ -22,30 +22,38 @@
   {% if not filtered_task_ids %}
     <tr><td colspan="99" class="empty">无符合筛选的题目</td></tr>
   {% endif %}
+  {% set diff_zh = {'easy': '简单', 'medium': '中等', 'hard': '困难', 'extreme': '极难'} %}
   {% for tid in filtered_task_ids %}
     {% set diff = difficulty_map.get(tid, '') %}
     <tr>
       <td class="task-col text-mono">{{ tid }}</td>
-      <td>{% if diff %}<span class="badge {{ diff }}">{{ diff }}</span>{% endif %}</td>
-      {% for run in runs_for_columns %}
-        {% set cell = (matrix.get(tid) or {}).get(run.run_id) %}
+      <td>{% if diff %}<span class="badge {{ diff }}">{{ diff_zh.get(diff, diff) }}</span>{% endif %}</td>
+      {% for kind in kinds_for_columns %}
+        {% set cell = (kind_matrix.get(tid) or {}).get(kind) %}
         <td>
-          {% if cell %}
-            {% set cls = score_cell_class(cell.get('score'), cell.get('has_prediction', False)) %}
-            <a class="score-cell {{ cls }}" href="/task/{{ tid }}?run={{ run.run_id }}">
-              {% if cell.get('has_prediction') %}{{ "%.2f"|format(cell.get('score', 0)) }}{% else %}—{% endif %}
+          {% if cell and cell.get('has_prediction') %}
+            {% set cls = score_cell_class(cell.get('mean_score'), True) %}
+            <a class="score-cell {{ cls }}"
+               href="/task/{{ tid }}?run={{ cell.get('representative_run_id') }}"
+               title="{{ cell.get('n_with_pred') }}/{{ cell.get('n_runs') }} runs submitted · click → replay {{ cell.get('representative_run_id') }}">
+              {{ "%.2f"|format(cell.get('mean_score') or 0) }}
+              {% if (cell.get('n_runs') or 1) > 1 %}<span class="cell-n">×{{ cell.get('n_runs') }}</span>{% endif %}
             </a>
+          {% elif cell %}
+            <a class="score-cell s-missing"
+               href="/task/{{ tid }}?run={{ cell.get('representative_run_id') }}"
+               title="not submitted by any run of {{ kind }}">—</a>
           {% else %}
             <span class="score-cell s-missing">—</span>
           {% endif %}
         </td>
       {% endfor %}
-      {% if reference_run_id and challenger_run_id %}
+      {% if reference_kind and challenger_kind and reference_kind != challenger_kind %}
       <td>
-        {% set ref_cell = (matrix.get(tid) or {}).get(reference_run_id) %}
-        {% set chg_cell = (matrix.get(tid) or {}).get(challenger_run_id) %}
-        {% if ref_cell and chg_cell and ref_cell.get('score') is not none and chg_cell.get('score') is not none %}
-          {% set delta = chg_cell.get('score', 0) - ref_cell.get('score', 0) %}
+        {% set ref_cell = (kind_matrix.get(tid) or {}).get(reference_kind) %}
+        {% set chg_cell = (kind_matrix.get(tid) or {}).get(challenger_kind) %}
+        {% if ref_cell and chg_cell and ref_cell.get('mean_score') is not none and chg_cell.get('mean_score') is not none %}
+          {% set delta = chg_cell.get('mean_score') - ref_cell.get('mean_score') %}
           {% if delta > 0.001 %}
             <span class="diff-up">▲ +{{ "%.2f"|format(delta) }}</span>
           {% elif delta < -0.001 %}
@@ -60,3 +68,4 @@
   {% endfor %}
   </tbody>
 </table>
+</div>

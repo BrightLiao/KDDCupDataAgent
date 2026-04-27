@@ -14,7 +14,15 @@ dependencies = [
     "jinja2>=3.1.4",
     "markdown>=3.7",
     "pygments>=2.18.0",
+    # Path-dep packages: needed only for prompt reconstruction in normalize.py.
+    # Imports are guarded — missing pkg degrades to "(unable to reconstruct)" message.
+    "data_agent_baseline",
+    "data_agent_v0",
 ]
+
+[tool.uv.sources]
+data_agent_baseline = { path = "../../kddcup2026-starter-kit", editable = true }
+data_agent_v0       = { path = "../../data_agent_v0",          editable = true }
 
 [project.optional-dependencies]
 dev = [

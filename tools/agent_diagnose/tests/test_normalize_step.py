@@ -86,5 +86,5 @@ def test_v0_submit_event():
 
 
 def test_detect_agent_kind():
-    assert detect_agent_kind({"steps": [], "v0_meta": {}}) == "v0"
+    assert detect_agent_kind({"steps": [], "v0_meta": {}}) == "agent_v0"
     assert detect_agent_kind({"steps": []}) == "baseline"
