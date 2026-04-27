@@ -204,6 +204,9 @@ bash data_agent_baseline_v1/submit_pipeline.sh team0042 baseline_v1_$(date +%Y%m
 
 [tools/agent_diagnose/](tools/agent_diagnose/) — FastAPI + Jinja2 + HTMX 内部诊断面板，无认证，部署到云服务器上小队伍直接看。
 
+> **当前部署**：<http://47.113.144.141:8000/overview> （Ali4KDD ECS · uvicorn 0.0.0.0:8000）
+> 阿里云安全组开放：源 IP 限内部成员，公网无认证，敏感性低。
+
 ### 启动
 
 ```bash
