@@ -71,8 +71,8 @@ python3 -m src.eval.enhanced_eval \
     --version-id "${IMAGE_TAG}" \
     --out "$REPORT"
 
-MICRO=$(python3 -c "import json; d=json.load(open('$REPORT')); print(d['accuracy']['micro_score'])")
-MACRO=$(python3 -c "import json; d=json.load(open('$REPORT')); print(d['accuracy']['macro_score'])")
+MICRO=$(python3 -c "import json; d=json.load(open('$REPORT')); print(d['accuracy']['micro_mean_score'])")
+MACRO=$(python3 -c "import json; d=json.load(open('$REPORT')); print(d['accuracy']['macro_mean_score'])")
 SUB=$(python3 -c "import json; d=json.load(open('$REPORT'))['submission']; print(d['submission_rate'])")
 PERF=$(python3 -c "import json; d=json.load(open('$REPORT'))['submission']; print(d['n_perfect'])")
 echo "  micro=$MICRO  macro=$MACRO  sub_rate=$SUB  n_perfect=$PERF"
@@ -80,7 +80,7 @@ echo "  micro=$MICRO  macro=$MACRO  sub_rate=$SUB  n_perfect=$PERF"
 echo "[3/3] Compare to baseline_v1 3-seed reference (tol ±0.05 micro)"
 REF="$REPO_ROOT/reports/baseline_v1_3seed_remote_eval_report.json"
 if [[ -f "$REF" ]]; then
-  REF_MICRO=$(python3 -c "import json; print(json.load(open('$REF'))['accuracy']['micro_score'])")
+  REF_MICRO=$(python3 -c "import json; print(json.load(open('$REF'))['accuracy']['micro_mean_score'])")
   python3 - "$MICRO" "$REF_MICRO" <<'PY'
 import sys
 m = float(sys.argv[1]); r = float(sys.argv[2])

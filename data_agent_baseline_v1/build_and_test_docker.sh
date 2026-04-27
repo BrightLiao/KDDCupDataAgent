@@ -13,7 +13,8 @@ ARCHIVE="${TEAM_ID}_${VERSION}.tar.gz"
 
 DOCKERFILE="data_agent_baseline_v1/Dockerfile"
 SMOKE_DIR="$REPO_ROOT/data_agent_baseline_v1/.smoke"
-SMOKE_TASKS=(task_11 task_56 task_163 task_180 task_344)
+# 覆盖 4 档难度（11=easy, 19=easy, 163=medium, 180=medium, 344=hard）
+SMOKE_TASKS=(task_11 task_19 task_163 task_180 task_344)
 
 echo "[1/7] Building $IMAGE_TAG (linux/amd64)"
 if docker buildx version >/dev/null 2>&1; then
@@ -30,13 +31,19 @@ docker images "$IMAGE_TAG" --format "  {{.Size}}"
 echo "[3/7] Prepare smoke task fixtures"
 rm -rf "$SMOKE_DIR"
 mkdir -p "$SMOKE_DIR"/{input,output,logs}
+COPIED_TASKS=()
 for t in "${SMOKE_TASKS[@]}"; do
   if [[ ! -d "$REPO_ROOT/data/demo/public/input/$t" ]]; then
     echo "  WARN: $t not found in data/demo/public/input — skipping"
     continue
   fi
   cp -r "$REPO_ROOT/data/demo/public/input/$t" "$SMOKE_DIR/input/"
+  COPIED_TASKS+=("$t")
 done
+if [[ ${#COPIED_TASKS[@]} -eq 0 ]]; then
+  echo "  ✗ no smoke tasks copied; check data/demo/public/input"; exit 1
+fi
+echo "  copied ${#COPIED_TASKS[@]} tasks: ${COPIED_TASKS[*]}"
 
 echo "[4/7] Smoke test (online via BAILIAN; MODEL_NAME=qwen-plus stand-in)"
 if [[ ! -f "$REPO_ROOT/.env" ]]; then
@@ -55,7 +62,7 @@ docker run --rm --cpus=16 --memory=64g \
     "$IMAGE_TAG"
 
 echo "[4.1/7] Verify smoke outputs"
-for t in "${SMOKE_TASKS[@]}"; do
+for t in "${COPIED_TASKS[@]}"; do
   csv="$SMOKE_DIR/output/$t/prediction.csv"
   if [[ -f "$csv" ]]; then
     echo "  ✓ $t : $(wc -l <"$csv") lines"
@@ -76,7 +83,7 @@ docker run --rm --network=none --stop-timeout 600 \
     "$IMAGE_TAG" || true
 
 echo "[5.1/7] Offline must have error placeholder CSVs:"
-for t in "${SMOKE_TASKS[@]}"; do
+for t in "${COPIED_TASKS[@]}"; do
   csv="$SMOKE_DIR/output_offline/$t/prediction.csv"
   if [[ -f "$csv" ]]; then
     echo "  ✓ $t : $(head -1 "$csv")"

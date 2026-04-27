@@ -243,9 +243,9 @@ class TaskRepl:
             ),
             daemon=True,
         )
+        self._closed = False
         self._proc.start()
         self._ready_payload = self._wait_ready(ready_timeout)
-        self._closed = False
 
     def _wait_ready(self, timeout: int) -> dict[str, Any]:
         try:

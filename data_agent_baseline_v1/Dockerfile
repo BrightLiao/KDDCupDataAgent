@@ -16,9 +16,10 @@ FROM python:3.11-slim-bookworm AS builder
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
-    PIP_INDEX_URL=https://mirrors.aliyun.com/pypi/simple/ \
-    PIP_TRUSTED_HOST=mirrors.aliyun.com \
-    UV_INDEX_URL=https://mirrors.aliyun.com/pypi/simple/ \
+    PIP_INDEX_URL=https://mirrors.cloud.tencent.com/pypi/simple/ \
+    PIP_TRUSTED_HOST=mirrors.cloud.tencent.com \
+    UV_INDEX_URL=https://mirrors.cloud.tencent.com/pypi/simple/ \
+    UV_HTTP_TIMEOUT=120 \
     UV_LINK_MODE=copy
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -37,6 +38,10 @@ COPY data_agent_v0/pyproject.toml data_agent_v0/README.md ./data_agent_v0/
 COPY data_agent_v0/src ./data_agent_v0/src
 COPY kddcup2026-starter-kit/pyproject.toml kddcup2026-starter-kit/README.md ./kddcup2026-starter-kit/
 COPY kddcup2026-starter-kit/src ./kddcup2026-starter-kit/src
+
+# repo 根 src/eval — data_agent_v0/output/normalize.py 通过 sys.path[parents[4]] 引入
+# 它来保证与 scorer 共享同一个 normalize_value（强一致性，杜绝静默漂移）.
+COPY src ./src
 
 # uv sync 在 baseline_v1 dir 内运行，自动把 baseline / v0 装入 baseline_v1/.venv
 # BuildKit cache mount → wheels 跨 build 复用；mirrors.aliyun.com 走国内 PyPI.
