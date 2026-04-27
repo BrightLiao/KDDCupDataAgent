@@ -1,0 +1,85 @@
+{
+  "version_id": "v0_v3",
+  "git_commit": "",
+  "runs": [
+    "data_agent_v0/artifacts/runs/demo_qwen35_v0_v3"
+  ],
+  "gold_root": "data/demo/public/output",
+  "input_root": "data/demo/public/input",
+  "lam": 0.5,
+  "n_tasks": 1,
+  "accuracy": {
+    "micro_mean_score": 1.0,
+    "macro_mean_score": 1.0,
+    "by_difficulty": {
+      "easy": {
+        "n": 1,
+        "mean_score": 1.0,
+        "n_perfect": 1,
+        "n_zero": 0
+      }
+    },
+    "by_data_kind": {
+      "json": {
+        "n": 1,
+        "mean_score": 1.0
+      }
+    }
+  },
+  "distribution": {
+    "step_per_task": {
+      "mean": 2,
+      "p50": 2,
+      "p95": 2,
+      "p99": 2,
+      "max": 2
+    },
+    "approx_tokens_per_task": {
+      "mean": 315,
+      "p50": 315,
+      "p95": 315,
+      "p99": 315,
+      "max": 315
+    },
+    "submit_attempts": {
+      "once": 1,
+      "multiple": 0,
+      "zero": 0
+    }
+  },
+  "submission": {
+    "submitted_count": 1,
+    "submission_rate": 1.0,
+    "n_perfect": 1,
+    "n_zero": 0
+  },
+  "failure_clusters": {},
+  "consistency": {
+    "runs_per_task": 1,
+    "note": "single run, consistency not computed"
+  },
+  "tasks": [
+    {
+      "task_id": "task_11",
+      "difficulty": "easy",
+      "has_prediction": true,
+      "pred_cols": 3,
+      "gold_cols": 3,
+      "matched": 3,
+      "extra": 0,
+      "recall": 1.0,
+      "extra_ratio": 0.0,
+      "score": 1.0,
+      "note": "",
+      "data_kind": "json",
+      "submitted": true,
+      "steps": 2,
+      "raw_response_chars": 1262,
+      "approx_tokens": 315,
+      "submit_attempts": 1,
+      "failure_reason": null,
+      "failure_cluster": "",
+      "answer_signature": "(('163109', 1), ('2803470', 1), ('4395720', 1))|(('F', 3),)|(('SLE', 3),)"
+    }
+  ]
+}

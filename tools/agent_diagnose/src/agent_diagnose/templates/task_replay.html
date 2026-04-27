@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}{{ task_id }} · {{ run.run_id }}{% endblock %}
+
+{% block content %}
+<div class="panel">
+  <div class="flex-between">
+    <div>
+      <h2 style="margin-bottom: 4px;">
+        <span class="text-mono">{{ task_id }}</span>
+        {% if difficulty %}<span class="badge {{ difficulty }}">{{ difficulty }}</span>{% endif %}
+        {% if score_info %}
+          <span class="badge {% if score_info.score >= 0.999 %}ok{% elif score_info.score > 0 %}medium{% else %}fail{% endif %}">
+            score {{ "%.2f"|format(score_info.score) }}
+          </span>
+        {% endif %}
+      </h2>
+      <div class="text-dim">{{ task_input.task.question if task_input.task else '(no question)' }}</div>
+    </div>
+    <form method="get" action="/task/{{ task_id }}" class="flex gap-2">
+      <label class="text-dim text-mono">run:</label>
+      <select name="run" onchange="this.form.submit()">
+        {% for r in all_runs %}
+        <option value="{{ r.run_id }}" {% if r.run_id == run.run_id %}selected{% endif %}>
+          {{ r.agent_kind }} / {{ r.run_id }}
+        </option>
+        {% endfor %}
+      </select>
+    </form>
+  </div>
+
+  <div class="flex gap-2 mt-2">
+    <span class="text-dim">agent:</span>
+    <span class="badge {% if run.agent_kind == 'baseline' %}medium{% else %}easy{% endif %}">{{ run.agent_kind }}</span>
+    <span class="text-dim">elapsed:</span>
+    <span class="text-mono">{{ trace.get('e2e_elapsed_seconds', '-') }}s</span>
+    <span class="text-dim">steps:</span>
+    <span class="text-mono">{{ steps|length }}</span>
+    {% if v0_meta %}
+      <span class="text-dim">routed:</span>
+      <span class="text-mono">{{ v0_meta.get('routed_branch', '-') }}</span>
+    {% endif %}
+    {% if trace.failure_reason %}
+      <span class="badge fail">{{ trace.failure_reason }}</span>
+    {% endif %}
+  </div>
+
+  {% if v0_meta and v0_meta.get('shape_spec') %}
+  <details class="mt-2">
+    <summary>Shape spec</summary>
+    <pre class="text-mono">{{ v0_meta.shape_spec | tojson(indent=2) }}</pre>
+  </details>
+  {% endif %}
+
+  {% if v0_meta and v0_meta.get('plan') %}
+  <details class="mt-2">
+    <summary>Plan ({{ v0_meta.plan|length }} steps)</summary>
+    <pre class="text-mono">{{ v0_meta.plan | tojson(indent=2) }}</pre>
+  </details>
+  {% endif %}
+
+  {% if knowledge_html %}
+  <details class="mt-4">
+    <summary>knowledge.md ({{ task_input.knowledge_md|length }} chars)</summary>
+    <div class="markdown-body">{{ knowledge_html|safe }}</div>
+  </details>
+  {% endif %}
+</div>
+
+<div class="task-layout">
+  <div class="timeline-side">
+    <div class="panel" style="margin-bottom: 0;">
+      <h3 style="margin: 0 0 8px; font-size: 13px;">Steps</h3>
+      {% for step in steps %}
+        {% set kind = 'submit' if step.submitted else ('ok' if step.ok else 'fail') %}
+        <a class="timeline-item" href="#step-{{ step.step_index }}">
+          <span class="step-no">#{{ step.step_index }}</span>
+          <span class="ok-mark {{ kind }}"></span>
+          <span class="text-mono" style="font-size: 12px;">{{ step.action[:18] }}</span>
+        </a>
+      {% endfor %}
+      {% if not steps %}<div class="empty">无 step</div>{% endif %}
+    </div>
+  </div>
+
+  <div>
+    {% for step in steps %}
+      {% with step_anchor='step-' ~ step.step_index %}
+        {% include "partials/step_card.html" %}
+      {% endwith %}
+    {% endfor %}
+
+    <div class="panel">
+      <h2>Prediction vs Gold</h2>
+      {% if pred is none and gold is none %}
+        <div class="empty">无 prediction.csv 和 gold.csv</div>
+      {% else %}
+        {% include "partials/prediction_diff.html" %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

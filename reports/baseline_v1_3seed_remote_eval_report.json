@@ -1,0 +1,1188 @@
+{
+  "version_id": "baseline_v1_3seed_remote",
+  "git_commit": "",
+  "runs": [
+    "/root/Source/DataProject/KDDCupDataAgent/data_agent_baseline_v1/artifacts/runs/demo_qwen35_baseline_v1_remote",
+    "/root/Source/DataProject/KDDCupDataAgent/data_agent_baseline_v1/artifacts/runs/demo_qwen35_baseline_v1_remote_s42",
+    "/root/Source/DataProject/KDDCupDataAgent/data_agent_baseline_v1/artifacts/runs/demo_qwen35_baseline_v1_remote_s43"
+  ],
+  "gold_root": "/root/Source/DataProject/KDDCupDataAgent/data/demo/public/output",
+  "input_root": "/root/Source/DataProject/KDDCupDataAgent/data/demo/public/input",
+  "lam": 0.5,
+  "n_tasks": 50,
+  "n_runs": 3,
+  "accuracy": {
+    "micro_mean_score": 0.5845,
+    "macro_mean_score": 0.4362,
+    "by_difficulty": {
+      "easy": {
+        "n": 15,
+        "mean_score": 0.6585,
+        "n_perfect": 8,
+        "n_zero": 2
+      },
+      "medium": {
+        "n": 23,
+        "mean_score": 0.6528,
+        "n_perfect": 11,
+        "n_zero": 4
+      },
+      "hard": {
+        "n": 10,
+        "mean_score": 0.4333,
+        "n_perfect": 3,
+        "n_zero": 4
+      },
+      "extreme": {
+        "n": 2,
+        "mean_score": 0.0,
+        "n_perfect": 0,
+        "n_zero": 2
+      }
+    },
+    "by_data_kind": {
+      "json": {
+        "n": 4,
+        "mean_score": 0.4792
+      },
+      "mixed": {
+        "n": 38,
+        "mean_score": 0.6572
+      },
+      "csv": {
+        "n": 6,
+        "mean_score": 0.2778
+      },
+      "db": {
+        "n": 1,
+        "mean_score": 0.6667
+      },
+      "?": {
+        "n": 1,
+        "mean_score": 0.0
+      }
+    }
+  },
+  "distribution": {
+    "step_per_task": {
+      "mean": 5.43,
+      "p50": 4.67,
+      "p95": 11.33,
+      "p99": 17,
+      "max": 17
+    },
+    "approx_tokens_per_task": {
+      "mean": 931.87,
+      "p50": 674.16,
+      "p95": 2439.67,
+      "p99": 3398.67,
+      "max": 3398.67
+    },
+    "submit_attempts": {
+      "once": 45,
+      "multiple": 0,
+      "zero": 5
+    }
+  },
+  "submission": {
+    "submitted_count": 47,
+    "submission_rate": 0.94,
+    "n_perfect": 22,
+    "n_zero": 12
+  },
+  "failure_clusters": {
+    "timeout": 11,
+    "other": 1
+  },
+  "consistency": {
+    "runs_per_task": 3,
+    "n_tasks": 50,
+    "all_agree_count": 26,
+    "majority_agree_count": 37,
+    "answer_entropy_mean": 0.2686
+  },
+  "tasks": [
+    {
+      "task_id": "task_11",
+      "difficulty": "easy",
+      "data_kind": "json",
+      "score": 0.8333,
+      "score_min": 0.5,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        0.5,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 2.33,
+      "approx_tokens": 424.67,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_145",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.6667,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        0.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.6667,
+      "steps": 3,
+      "approx_tokens": 446,
+      "submit_attempts": 0.67,
+      "failure_cluster": "",
+      "failure_reasons": [
+        "Task timed out after 600 seconds."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_163",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 4.67,
+      "approx_tokens": 847.67,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_169",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 3.67,
+      "approx_tokens": 541,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_173",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.3333,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 17,
+      "approx_tokens": 3398.67,
+      "submit_attempts": 1,
+      "failure_cluster": "timeout",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_180",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.6667,
+      "steps": 3.33,
+      "approx_tokens": 628.67,
+      "submit_attempts": 0.67,
+      "failure_cluster": "timeout",
+      "failure_reasons": [
+        "Task timed out after 600 seconds."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_19",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 6,
+      "approx_tokens": 436,
+      "submit_attempts": 1,
+      "failure_cluster": "timeout",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_194",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 6.67,
+      "approx_tokens": 1706,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_196",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.6667,
+      "steps": 3.33,
+      "approx_tokens": 664.33,
+      "submit_attempts": 0.67,
+      "failure_cluster": "timeout",
+      "failure_reasons": [
+        "Task timed out after 600 seconds."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_199",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.3333,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 9,
+      "approx_tokens": 1550.33,
+      "submit_attempts": 1,
+      "failure_cluster": "timeout",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_200",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 5.33,
+      "approx_tokens": 925.67,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_214",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 7.33,
+      "approx_tokens": 918,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_218",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 9,
+      "approx_tokens": 1634.33,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_22",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 4,
+      "approx_tokens": 377.33,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_24",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 2,
+      "approx_tokens": 207.67,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_243",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.5417,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        0.0,
+        1.0,
+        0.625
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.6667,
+      "steps": 2,
+      "approx_tokens": 236.67,
+      "submit_attempts": 0.67,
+      "failure_cluster": "",
+      "failure_reasons": [
+        "Task timed out after 600 seconds."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_249",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 5.67,
+      "approx_tokens": 948,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_25",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 0.25,
+      "score_min": 0.0,
+      "score_max": 0.75,
+      "per_run_scores": [
+        0.0,
+        0.75,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 4.33,
+      "approx_tokens": 737.67,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_250",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.6667,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        0.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.6667,
+      "steps": 7.33,
+      "approx_tokens": 1286.67,
+      "submit_attempts": 0.67,
+      "failure_cluster": "",
+      "failure_reasons": [
+        "Task timed out after 600 seconds."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_257",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.75,
+      "score_min": 0.25,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        0.25,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 4.33,
+      "approx_tokens": 858.33,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_259",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.3889,
+      "score_min": 0.0,
+      "score_max": 0.5833,
+      "per_run_scores": [
+        0.5833,
+        0.5833,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 3.67,
+      "approx_tokens": 684,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_26",
+      "difficulty": "easy",
+      "data_kind": "json",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 2.67,
+      "approx_tokens": 206,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_261",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 7.67,
+      "approx_tokens": 1192.33,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_269",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 8.67,
+      "approx_tokens": 1785.67,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_27",
+      "difficulty": "easy",
+      "data_kind": "json",
+      "score": 0.0833,
+      "score_min": 0.0833,
+      "score_max": 0.0833,
+      "per_run_scores": [
+        0.0833,
+        0.0833,
+        0.0833
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 2,
+      "approx_tokens": 202.33,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_283",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 5.33,
+      "approx_tokens": 851.67,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_287",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 6,
+      "approx_tokens": 1131.33,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_292",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 8,
+      "approx_tokens": 947,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_303",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.3333,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.3333,
+      "steps": 2.67,
+      "approx_tokens": 434.33,
+      "submit_attempts": 0.33,
+      "failure_cluster": "timeout",
+      "failure_reasons": [
+        "Task timed out after 600 seconds.",
+        "Task timed out after 600 seconds."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_305",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 5,
+      "approx_tokens": 495.67,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_330",
+      "difficulty": "hard",
+      "data_kind": "csv",
+      "score": 0.5833,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        0.0,
+        1.0,
+        0.75
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.6667,
+      "steps": 3.67,
+      "approx_tokens": 521.67,
+      "submit_attempts": 0.67,
+      "failure_cluster": "",
+      "failure_reasons": [
+        "Task timed out after 600 seconds."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_344",
+      "difficulty": "hard",
+      "data_kind": "csv",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 11.33,
+      "approx_tokens": 2439.67,
+      "submit_attempts": 1,
+      "failure_cluster": "timeout",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_349",
+      "difficulty": "hard",
+      "data_kind": "csv",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 4,
+      "approx_tokens": 450.33,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_350",
+      "difficulty": "hard",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 10.67,
+      "approx_tokens": 2271.33,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_352",
+      "difficulty": "hard",
+      "data_kind": "csv",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.3333,
+      "steps": 11.33,
+      "approx_tokens": 2481,
+      "submit_attempts": 0.33,
+      "failure_cluster": "timeout",
+      "failure_reasons": [
+        "Agent did not call submit() within max_steps.",
+        "Task timed out after 600 seconds."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_355",
+      "difficulty": "hard",
+      "data_kind": "csv",
+      "score": 0.0833,
+      "score_min": 0.0833,
+      "score_max": 0.0833,
+      "per_run_scores": [
+        0.0833,
+        0.0833,
+        0.0833
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 9,
+      "approx_tokens": 1232,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_379",
+      "difficulty": "hard",
+      "data_kind": "csv",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.6667,
+      "steps": 7.67,
+      "approx_tokens": 1455.67,
+      "submit_attempts": 0.67,
+      "failure_cluster": "timeout",
+      "failure_reasons": [
+        "Task timed out after 600 seconds."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_38",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 0.3778,
+      "score_min": 0.0,
+      "score_max": 0.5833,
+      "per_run_scores": [
+        0.0,
+        0.55,
+        0.5833
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 2.67,
+      "approx_tokens": 434.33,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_396",
+      "difficulty": "hard",
+      "data_kind": "json",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": false,
+      "submit_rate_across_runs": 0.0,
+      "steps": 5.67,
+      "approx_tokens": 574.33,
+      "submit_attempts": 0,
+      "failure_cluster": "timeout",
+      "failure_reasons": [
+        "Agent did not call submit() within max_steps.",
+        "Task timed out after 600 seconds.",
+        "Task timed out after 600 seconds."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_408",
+      "difficulty": "hard",
+      "data_kind": "db",
+      "score": 0.6667,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        0.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 8,
+      "approx_tokens": 2050.33,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_415",
+      "difficulty": "hard",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 9.33,
+      "approx_tokens": 2407.67,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_418",
+      "difficulty": "extreme",
+      "data_kind": "?",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": false,
+      "submit_rate_across_runs": 0.0,
+      "steps": 5.67,
+      "approx_tokens": 1232,
+      "submit_attempts": 0,
+      "failure_cluster": "timeout",
+      "failure_reasons": [
+        "Task timed out after 600 seconds.",
+        "Agent did not call submit() within max_steps.",
+        "Task failed with uncaught error: Model request failed: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For details, see: https://help.aliyun.com/zh/model-studio/error-code#token-limit', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}, 'request_id': '380a0861-a40b-9451-9a4a-1bd57da125d2'}"
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_420",
+      "difficulty": "extreme",
+      "data_kind": "mixed",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": false,
+      "submit_rate_across_runs": 0.0,
+      "steps": 0,
+      "approx_tokens": 0,
+      "submit_attempts": 0,
+      "failure_cluster": "other",
+      "failure_reasons": [
+        "Task failed with uncaught error: Model request failed: Error code: 400 - {'error': {'message': '<400> InternalError.Algo.InvalidParameter: Range of input length should be [1, 258048]', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_parameter_error'}, 'id': 'chatcmpl-6f76f527-5d2f-947a-b0ab-9fca2968a958', 'request_id': '6f76f527-5d2f-947a-b0ab-9fca2968a958'}",
+        "Task failed with uncaught error: Model request failed: Error code: 400 - {'error': {'message': '<400> InternalError.Algo.InvalidParameter: Range of input length should be [1, 258048]', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_parameter_error'}, 'id': 'chatcmpl-aa5e9412-ed2b-95a4-8d73-e4bf5ddac0d6', 'request_id': 'aa5e9412-ed2b-95a4-8d73-e4bf5ddac0d6'}",
+        "Task failed with uncaught error: Model request failed: Error code: 400 - {'error': {'message': '<400> InternalError.Algo.InvalidParameter: Range of input length should be [1, 258048]', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_parameter_error'}, 'id': 'chatcmpl-85b669f5-2149-9ca8-a15c-7c95501e97a4', 'request_id': '85b669f5-2149-9ca8-a15c-7c95501e97a4'}"
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_64",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 2.33,
+      "approx_tokens": 213.33,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_67",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 2,
+      "approx_tokens": 121,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_74",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 3,
+      "approx_tokens": 255.33,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_75",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 1.67,
+      "approx_tokens": 362.33,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_80",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 3.67,
+      "approx_tokens": 523.33,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_86",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 3.33,
+      "approx_tokens": 445.67,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_89",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 0.3333,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 4.67,
+      "approx_tokens": 418,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    }
+  ]
+}

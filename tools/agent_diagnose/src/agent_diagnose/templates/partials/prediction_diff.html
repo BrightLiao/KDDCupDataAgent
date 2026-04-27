@@ -1,0 +1,74 @@
+{# Expects: diff (DiffResult), score_info (dict|None) #}
+<div class="diff-summary">
+  {% if score_info %}
+    <div class="stat">
+      <div class="text-dim">Score</div>
+      <div class="num">{{ "%.4f"|format(score_info.score) }}</div>
+    </div>
+    <div class="stat">
+      <div class="text-dim">Recall</div>
+      <div class="num">{{ "%.4f"|format(score_info.recall) }}</div>
+    </div>
+    <div class="stat">
+      <div class="text-dim">Extra ratio</div>
+      <div class="num">{{ "%.4f"|format(score_info.extra_ratio) }}</div>
+    </div>
+  {% endif %}
+  <div class="stat">
+    <div class="text-dim">Matched</div>
+    <div class="num"><span class="diff-up">{{ diff.matched|length }}</span> / {{ diff.gold_total }}</div>
+  </div>
+  <div class="stat">
+    <div class="text-dim">Extra pred</div>
+    <div class="num"><span class="diff-down">{{ diff.extra_pred|length }}</span></div>
+  </div>
+  <div class="stat">
+    <div class="text-dim">Missing gold</div>
+    <div class="num"><span class="diff-down">{{ diff.missing_gold|length }}</span></div>
+  </div>
+</div>
+
+<div class="diff-grid">
+  <div>
+    <h3 class="text-dim" style="margin: 4px 0;">Matched cols</h3>
+    {% if diff.matched %}
+    <table>
+      <thead><tr><th>Pred col</th><th>Gold col</th><th>Sample</th></tr></thead>
+      <tbody>
+      {% for pc, gc in diff.matched %}
+        <tr>
+          <td class="text-mono">{{ pc.name }}</td>
+          <td class="text-mono">{{ gc.name }}</td>
+          <td class="text-mono text-dim">{{ pc.sample_values|join(', ') }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}<div class="empty">无匹配列</div>{% endif %}
+  </div>
+
+  <div>
+    <h3 class="text-dim" style="margin: 4px 0;">Extra pred / Missing gold</h3>
+    {% if diff.extra_pred or diff.missing_gold %}
+    <table>
+      <thead><tr><th>Type</th><th>Col</th><th>Sample</th></tr></thead>
+      <tbody>
+      {% for c in diff.extra_pred %}
+        <tr>
+          <td><span class="badge fail">extra</span></td>
+          <td class="text-mono">{{ c.name }}</td>
+          <td class="text-mono text-dim">{{ c.sample_values|join(', ') }}</td>
+        </tr>
+      {% endfor %}
+      {% for c in diff.missing_gold %}
+        <tr>
+          <td><span class="badge medium">missing</span></td>
+          <td class="text-mono">{{ c.name }}</td>
+          <td class="text-mono text-dim">{{ c.sample_values|join(', ') }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}<div class="empty">无 extra / missing 列</div>{% endif %}
+  </div>
+</div>

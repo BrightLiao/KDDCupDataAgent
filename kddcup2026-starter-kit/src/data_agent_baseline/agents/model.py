@@ -33,11 +33,13 @@ class OpenAIModelAdapter:
         api_base: str,
         api_key: str,
         temperature: float,
+        seed: int | None = None,
     ) -> None:
         self.model = model
         self.api_base = api_base.rstrip("/")
         self.api_key = api_key
         self.temperature = temperature
+        self.seed = seed
 
     def complete(self, messages: list[ModelMessage]) -> str:
         if not self.api_key:
@@ -48,12 +50,16 @@ class OpenAIModelAdapter:
             base_url=self.api_base,
         )
 
+        kwargs: dict = {
+            "model": self.model,
+            "messages": [{"role": m.role, "content": m.content} for m in messages],
+            "temperature": self.temperature,
+        }
+        if self.seed is not None:
+            kwargs["seed"] = self.seed
+
         try:
-            response = client.chat.completions.create(
-                model=self.model,
-                messages=[{"role": message.role, "content": message.content} for message in messages],
-                temperature=self.temperature
-            )
+            response = client.chat.completions.create(**kwargs)
         except APIError as exc:
             raise RuntimeError(f"Model request failed: {exc}") from exc
 

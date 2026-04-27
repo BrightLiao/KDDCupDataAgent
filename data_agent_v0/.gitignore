@@ -1,0 +1,17 @@
+# runtime configs (built by run_v0.sh from local template + .env)
+*.runtime.yaml
+
+# build / venv / artifacts
+.venv/
+.uv_cache/
+__pycache__/
+*.py[cod]
+dist/
+build/
+*.egg-info/
+artifacts/
+
+# editor
+.DS_Store
+.vscode/
+.idea/

@@ -1,0 +1,62 @@
+{# Score matrix tbody only — used both as full-page block and HTMX fragment.
+   Expects: filtered_task_ids, runs_for_columns, matrix, difficulty_map, score_cell_class
+   reference_run_id (str|None), challenger_run_id (str|None) — for diff arrow rendering
+#}
+<table class="matrix">
+  <thead>
+    <tr>
+      <th class="task-col">Task</th>
+      <th>Diff</th>
+      {% for run in runs_for_columns %}
+      <th>
+        <div>{{ run.agent_kind }}</div>
+        <div class="text-dim text-mono" style="font-size: 11px; font-weight: 400;">{{ run.run_id }}</div>
+      </th>
+      {% endfor %}
+      {% if reference_run_id and challenger_run_id %}
+      <th>Δ (challenger − reference)</th>
+      {% endif %}
+    </tr>
+  </thead>
+  <tbody>
+  {% if not filtered_task_ids %}
+    <tr><td colspan="99" class="empty">无符合筛选的题目</td></tr>
+  {% endif %}
+  {% for tid in filtered_task_ids %}
+    {% set diff = difficulty_map.get(tid, '') %}
+    <tr>
+      <td class="task-col text-mono">{{ tid }}</td>
+      <td>{% if diff %}<span class="badge {{ diff }}">{{ diff }}</span>{% endif %}</td>
+      {% for run in runs_for_columns %}
+        {% set cell = (matrix.get(tid) or {}).get(run.run_id) %}
+        <td>
+          {% if cell %}
+            {% set cls = score_cell_class(cell.get('score'), cell.get('has_prediction', False)) %}
+            <a class="score-cell {{ cls }}" href="/task/{{ tid }}?run={{ run.run_id }}">
+              {% if cell.get('has_prediction') %}{{ "%.2f"|format(cell.get('score', 0)) }}{% else %}—{% endif %}
+            </a>
+          {% else %}
+            <span class="score-cell s-missing">—</span>
+          {% endif %}
+        </td>
+      {% endfor %}
+      {% if reference_run_id and challenger_run_id %}
+      <td>
+        {% set ref_cell = (matrix.get(tid) or {}).get(reference_run_id) %}
+        {% set chg_cell = (matrix.get(tid) or {}).get(challenger_run_id) %}
+        {% if ref_cell and chg_cell and ref_cell.get('score') is not none and chg_cell.get('score') is not none %}
+          {% set delta = chg_cell.get('score', 0) - ref_cell.get('score', 0) %}
+          {% if delta > 0.001 %}
+            <span class="diff-up">▲ +{{ "%.2f"|format(delta) }}</span>
+          {% elif delta < -0.001 %}
+            <span class="diff-down">▼ {{ "%.2f"|format(delta) }}</span>
+          {% else %}
+            <span class="text-dim">—</span>
+          {% endif %}
+        {% endif %}
+      </td>
+      {% endif %}
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>

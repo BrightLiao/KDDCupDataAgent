@@ -1,0 +1,1258 @@
+{
+  "version_id": "baseline_3seed_remote",
+  "git_commit": "",
+  "runs": [
+    "/root/Source/DataProject/KDDCupDataAgent/kddcup2026-starter-kit/artifacts/runs/demo_qwen35_baseline_remote",
+    "/root/Source/DataProject/KDDCupDataAgent/kddcup2026-starter-kit/artifacts/runs/demo_qwen35_baseline_remote_s42",
+    "/root/Source/DataProject/KDDCupDataAgent/kddcup2026-starter-kit/artifacts/runs/demo_qwen35_baseline_remote_s43"
+  ],
+  "gold_root": "/root/Source/DataProject/KDDCupDataAgent/data/demo/public/output",
+  "input_root": "/root/Source/DataProject/KDDCupDataAgent/data/demo/public/input",
+  "lam": 0.5,
+  "n_tasks": 50,
+  "n_runs": 3,
+  "accuracy": {
+    "micro_mean_score": 0.3756,
+    "macro_mean_score": 0.3268,
+    "by_difficulty": {
+      "easy": {
+        "n": 15,
+        "mean_score": 0.4278,
+        "n_perfect": 4,
+        "n_zero": 6
+      },
+      "medium": {
+        "n": 23,
+        "mean_score": 0.3768,
+        "n_perfect": 1,
+        "n_zero": 10
+      },
+      "hard": {
+        "n": 10,
+        "mean_score": 0.3361,
+        "n_perfect": 2,
+        "n_zero": 4
+      },
+      "extreme": {
+        "n": 2,
+        "mean_score": 0.1666,
+        "n_perfect": 0,
+        "n_zero": 1
+      }
+    },
+    "by_data_kind": {
+      "json": {
+        "n": 4,
+        "mean_score": 0.4375
+      },
+      "mixed": {
+        "n": 38,
+        "mean_score": 0.4035
+      },
+      "csv": {
+        "n": 6,
+        "mean_score": 0.1157
+      },
+      "db": {
+        "n": 1,
+        "mean_score": 1.0
+      },
+      "?": {
+        "n": 1,
+        "mean_score": 0.0
+      }
+    }
+  },
+  "distribution": {
+    "step_per_task": {
+      "mean": 11.05,
+      "p50": 11.0,
+      "p95": 16,
+      "p99": 16,
+      "max": 16
+    },
+    "approx_tokens_per_task": {
+      "mean": 1392.26,
+      "p50": 1358.34,
+      "p95": 3258.67,
+      "p99": 3932.33,
+      "max": 3932.33
+    },
+    "submit_attempts": {
+      "once": 31,
+      "multiple": 0,
+      "zero": 19
+    }
+  },
+  "submission": {
+    "submitted_count": 40,
+    "submission_rate": 0.8,
+    "n_perfect": 7,
+    "n_zero": 21
+  },
+  "failure_clusters": {
+    "step_budget_exhausted": 16,
+    "other": 7,
+    "timeout": 2
+  },
+  "consistency": {
+    "runs_per_task": 3,
+    "n_tasks": 50,
+    "all_agree_count": 9,
+    "majority_agree_count": 28,
+    "answer_entropy_mean": 0.1318
+  },
+  "tasks": [
+    {
+      "task_id": "task_11",
+      "difficulty": "easy",
+      "data_kind": "json",
+      "score": 0.6667,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        0.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.6667,
+      "steps": 12.67,
+      "approx_tokens": 1519.33,
+      "submit_attempts": 0.67,
+      "failure_cluster": "",
+      "failure_reasons": [
+        "Agent did not submit an answer within max_steps."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_145",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.3333,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.3333,
+      "steps": 13.33,
+      "approx_tokens": 2317.67,
+      "submit_attempts": 0.33,
+      "failure_cluster": "step_budget_exhausted",
+      "failure_reasons": [
+        "Agent did not submit an answer within max_steps.",
+        "Agent did not submit an answer within max_steps."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_163",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": false,
+      "submit_rate_across_runs": 0.0,
+      "steps": 16,
+      "approx_tokens": 3258.67,
+      "submit_attempts": 0,
+      "failure_cluster": "step_budget_exhausted",
+      "failure_reasons": [
+        "Agent did not submit an answer within max_steps.",
+        "Agent did not submit an answer within max_steps.",
+        "Agent did not submit an answer within max_steps."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_169",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 5.67,
+      "approx_tokens": 459.33,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_173",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.6667,
+      "steps": 7.33,
+      "approx_tokens": 708.33,
+      "submit_attempts": 0.67,
+      "failure_cluster": "other",
+      "failure_reasons": [
+        "Task failed with uncaught error: Model request failed: Error code: 400 - {'error': {'message': '<400> InternalError.Algo.InvalidParameter: Range of input length should be [1, 258048]', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_parameter_error'}, 'id': 'chatcmpl-434e0809-1637-92ff-ad3f-3061c9faaae7', 'request_id': '434e0809-1637-92ff-ad3f-3061c9faaae7'}"
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_180",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": false,
+      "submit_rate_across_runs": 0.0,
+      "steps": 16,
+      "approx_tokens": 3932.33,
+      "submit_attempts": 0,
+      "failure_cluster": "step_budget_exhausted",
+      "failure_reasons": [
+        "Agent did not submit an answer within max_steps.",
+        "Agent did not submit an answer within max_steps.",
+        "Agent did not submit an answer within max_steps."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_19",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.6667,
+      "steps": 11,
+      "approx_tokens": 1548.33,
+      "submit_attempts": 0.67,
+      "failure_cluster": "other",
+      "failure_reasons": [
+        "Agent did not submit an answer within max_steps."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_194",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 8,
+      "approx_tokens": 619.33,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_196",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.6667,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.6667,
+      "steps": 13.33,
+      "approx_tokens": 1703.33,
+      "submit_attempts": 0.67,
+      "failure_cluster": "",
+      "failure_reasons": [
+        "Agent did not submit an answer within max_steps."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_199",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.3333,
+      "steps": 14.67,
+      "approx_tokens": 3237,
+      "submit_attempts": 0.33,
+      "failure_cluster": "step_budget_exhausted",
+      "failure_reasons": [
+        "Agent did not submit an answer within max_steps.",
+        "Agent did not submit an answer within max_steps."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_200",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.3333,
+      "steps": 15,
+      "approx_tokens": 2197.33,
+      "submit_attempts": 0.33,
+      "failure_cluster": "step_budget_exhausted",
+      "failure_reasons": [
+        "Agent did not submit an answer within max_steps.",
+        "Agent did not submit an answer within max_steps."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_214",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.6667,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        0.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.6667,
+      "steps": 12,
+      "approx_tokens": 1688,
+      "submit_attempts": 0.67,
+      "failure_cluster": "",
+      "failure_reasons": [
+        "Agent did not submit an answer within max_steps."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_218",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": false,
+      "submit_rate_across_runs": 0.0,
+      "steps": 16,
+      "approx_tokens": 1833.67,
+      "submit_attempts": 0,
+      "failure_cluster": "step_budget_exhausted",
+      "failure_reasons": [
+        "Agent did not submit an answer within max_steps.",
+        "Agent did not submit an answer within max_steps.",
+        "Agent did not submit an answer within max_steps."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_22",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 0.3333,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 6.67,
+      "approx_tokens": 444,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_24",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 7.33,
+      "approx_tokens": 538,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_243",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.6667,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        0.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.6667,
+      "steps": 11,
+      "approx_tokens": 811.33,
+      "submit_attempts": 0.67,
+      "failure_cluster": "",
+      "failure_reasons": [
+        "Agent did not submit an answer within max_steps."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_249",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.6667,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.6667,
+      "steps": 11,
+      "approx_tokens": 2443.67,
+      "submit_attempts": 0.67,
+      "failure_cluster": "",
+      "failure_reasons": [
+        "Agent did not submit an answer within max_steps."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_25",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 9,
+      "approx_tokens": 1373,
+      "submit_attempts": 1,
+      "failure_cluster": "other",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_250",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.6667,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        0.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.6667,
+      "steps": 15.33,
+      "approx_tokens": 1825.67,
+      "submit_attempts": 0.67,
+      "failure_cluster": "",
+      "failure_reasons": [
+        "Agent did not submit an answer within max_steps."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_257",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.4167,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        0.0,
+        1.0,
+        0.25
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.6667,
+      "steps": 14.33,
+      "approx_tokens": 1439,
+      "submit_attempts": 0.67,
+      "failure_cluster": "",
+      "failure_reasons": [
+        "Agent did not submit an answer within max_steps."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_259",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.3333,
+      "steps": 12.33,
+      "approx_tokens": 2124.67,
+      "submit_attempts": 0.33,
+      "failure_cluster": "step_budget_exhausted",
+      "failure_reasons": [
+        "Agent did not submit an answer within max_steps.",
+        "Agent did not submit an answer within max_steps."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_26",
+      "difficulty": "easy",
+      "data_kind": "json",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 6.67,
+      "approx_tokens": 652,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_261",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.6667,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        0.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.6667,
+      "steps": 12.33,
+      "approx_tokens": 2479.33,
+      "submit_attempts": 0.67,
+      "failure_cluster": "",
+      "failure_reasons": [
+        "Agent did not submit an answer within max_steps."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_269",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": false,
+      "submit_rate_across_runs": 0.0,
+      "steps": 10.67,
+      "approx_tokens": 1481.67,
+      "submit_attempts": 0,
+      "failure_cluster": "step_budget_exhausted",
+      "failure_reasons": [
+        "Task timed out after 600 seconds.",
+        "Agent did not submit an answer within max_steps.",
+        "Agent did not submit an answer within max_steps."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_27",
+      "difficulty": "easy",
+      "data_kind": "json",
+      "score": 0.0833,
+      "score_min": 0.0833,
+      "score_max": 0.0833,
+      "per_run_scores": [
+        0.0833,
+        0.0833,
+        0.0833
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 10.33,
+      "approx_tokens": 1318.67,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_283",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.6667,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        0.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 9,
+      "approx_tokens": 564.67,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_287",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.6667,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        0.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.6667,
+      "steps": 13.33,
+      "approx_tokens": 1005,
+      "submit_attempts": 0.67,
+      "failure_cluster": "",
+      "failure_reasons": [
+        "Agent did not submit an answer within max_steps."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_292",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.9167,
+      "score_min": 0.75,
+      "score_max": 1.0,
+      "per_run_scores": [
+        0.75,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 6,
+      "approx_tokens": 408.67,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_303",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.6667,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        0.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.6667,
+      "steps": 14.67,
+      "approx_tokens": 1415.33,
+      "submit_attempts": 0.67,
+      "failure_cluster": "",
+      "failure_reasons": [
+        "Agent did not submit an answer within max_steps."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_305",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": false,
+      "submit_rate_across_runs": 0.0,
+      "steps": 16,
+      "approx_tokens": 1585.33,
+      "submit_attempts": 0,
+      "failure_cluster": "step_budget_exhausted",
+      "failure_reasons": [
+        "Agent did not submit an answer within max_steps.",
+        "Agent did not submit an answer within max_steps.",
+        "Agent did not submit an answer within max_steps."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_330",
+      "difficulty": "hard",
+      "data_kind": "csv",
+      "score": 0.3333,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.3333,
+      "steps": 13.33,
+      "approx_tokens": 1400.67,
+      "submit_attempts": 0.33,
+      "failure_cluster": "step_budget_exhausted",
+      "failure_reasons": [
+        "Agent did not submit an answer within max_steps.",
+        "Agent did not submit an answer within max_steps."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_344",
+      "difficulty": "hard",
+      "data_kind": "csv",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": false,
+      "submit_rate_across_runs": 0.0,
+      "steps": 10.67,
+      "approx_tokens": 747.33,
+      "submit_attempts": 0,
+      "failure_cluster": "step_budget_exhausted",
+      "failure_reasons": [
+        "Task timed out after 600 seconds.",
+        "Agent did not submit an answer within max_steps.",
+        "Agent did not submit an answer within max_steps."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_349",
+      "difficulty": "hard",
+      "data_kind": "csv",
+      "score": 0.3333,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.3333,
+      "steps": 7.33,
+      "approx_tokens": 681.33,
+      "submit_attempts": 0.33,
+      "failure_cluster": "timeout",
+      "failure_reasons": [
+        "Task timed out after 600 seconds.",
+        "Agent did not submit an answer within max_steps."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_350",
+      "difficulty": "hard",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 11.67,
+      "approx_tokens": 1062,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_352",
+      "difficulty": "hard",
+      "data_kind": "csv",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": false,
+      "submit_rate_across_runs": 0.0,
+      "steps": 5.33,
+      "approx_tokens": 620,
+      "submit_attempts": 0,
+      "failure_cluster": "timeout",
+      "failure_reasons": [
+        "Agent did not submit an answer within max_steps.",
+        "Task timed out after 600 seconds.",
+        "Task timed out after 600 seconds."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_355",
+      "difficulty": "hard",
+      "data_kind": "csv",
+      "score": 0.0278,
+      "score_min": 0.0,
+      "score_max": 0.0833,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0833
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.3333,
+      "steps": 13,
+      "approx_tokens": 1361,
+      "submit_attempts": 0.33,
+      "failure_cluster": "step_budget_exhausted",
+      "failure_reasons": [
+        "Agent did not submit an answer within max_steps.",
+        "Agent did not submit an answer within max_steps."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_379",
+      "difficulty": "hard",
+      "data_kind": "csv",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.6667,
+      "steps": 6.67,
+      "approx_tokens": 1359,
+      "submit_attempts": 0.67,
+      "failure_cluster": "other",
+      "failure_reasons": [
+        "Task timed out after 600 seconds."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_38",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.3333,
+      "steps": 8.33,
+      "approx_tokens": 1913,
+      "submit_attempts": 0.33,
+      "failure_cluster": "other",
+      "failure_reasons": [
+        "Agent did not submit an answer within max_steps.",
+        "Task timed out after 600 seconds."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_396",
+      "difficulty": "hard",
+      "data_kind": "json",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": false,
+      "submit_rate_across_runs": 0.0,
+      "steps": 16,
+      "approx_tokens": 1357.67,
+      "submit_attempts": 0,
+      "failure_cluster": "step_budget_exhausted",
+      "failure_reasons": [
+        "Agent did not submit an answer within max_steps.",
+        "Agent did not submit an answer within max_steps.",
+        "Agent did not submit an answer within max_steps."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_408",
+      "difficulty": "hard",
+      "data_kind": "db",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 12.33,
+      "approx_tokens": 1029.33,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_415",
+      "difficulty": "hard",
+      "data_kind": "mixed",
+      "score": 0.6667,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        0.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.6667,
+      "steps": 10.33,
+      "approx_tokens": 814.67,
+      "submit_attempts": 0.67,
+      "failure_cluster": "",
+      "failure_reasons": [
+        "Agent did not submit an answer within max_steps."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_418",
+      "difficulty": "extreme",
+      "data_kind": "?",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": false,
+      "submit_rate_across_runs": 0.0,
+      "steps": 10.67,
+      "approx_tokens": 747,
+      "submit_attempts": 0,
+      "failure_cluster": "step_budget_exhausted",
+      "failure_reasons": [
+        "Agent did not submit an answer within max_steps.",
+        "Agent did not submit an answer within max_steps.",
+        "Task timed out after 600 seconds."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_420",
+      "difficulty": "extreme",
+      "data_kind": "mixed",
+      "score": 0.3333,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.3333,
+      "steps": 15.67,
+      "approx_tokens": 3269.67,
+      "submit_attempts": 0.33,
+      "failure_cluster": "step_budget_exhausted",
+      "failure_reasons": [
+        "Agent did not submit an answer within max_steps.",
+        "Agent did not submit an answer within max_steps."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_64",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 0.6667,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        0.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.6667,
+      "steps": 11.33,
+      "approx_tokens": 1310.33,
+      "submit_attempts": 0.67,
+      "failure_cluster": "",
+      "failure_reasons": [
+        "Agent did not submit an answer within max_steps."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_67",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 5,
+      "approx_tokens": 427,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_74",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 6,
+      "approx_tokens": 522.67,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_75",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 0.6667,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        0.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.6667,
+      "steps": 11,
+      "approx_tokens": 1459.33,
+      "submit_attempts": 0.67,
+      "failure_cluster": "",
+      "failure_reasons": [
+        "Agent did not submit an answer within max_steps."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_80",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.6667,
+      "steps": 11,
+      "approx_tokens": 1007.33,
+      "submit_attempts": 0.67,
+      "failure_cluster": "other",
+      "failure_reasons": [
+        "Agent did not submit an answer within max_steps."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_86",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": false,
+      "submit_rate_across_runs": 0.0,
+      "steps": 10.67,
+      "approx_tokens": 842.67,
+      "submit_attempts": 0,
+      "failure_cluster": "step_budget_exhausted",
+      "failure_reasons": [
+        "Agent did not submit an answer within max_steps.",
+        "Task timed out after 600 seconds.",
+        "Agent did not submit an answer within max_steps."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_89",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 9,
+      "approx_tokens": 748.33,
+      "submit_attempts": 1,
+      "failure_cluster": "other",
+      "failure_reasons": [],
+      "n_runs": 3
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Overview · Agent Diagnose{% endblock %}
+
+{% block content %}
+<div class="panel">
+  <div class="flex-between">
+    <h2>Run KPIs</h2>
+    <span class="text-dim text-mono">{{ kpis_list|length }} / {{ runs|length }} runs scored</span>
+  </div>
+  {% if not kpis_list %}
+    <div class="empty">还没有任何 run 完成评分。先跑 baseline 或 v0 的 benchmark。</div>
+  {% endif %}
+  {% for kpis in kpis_list %}
+    {% include "partials/kpi_row.html" %}
+  {% endfor %}
+</div>
+
+<div class="panel">
+  <div class="flex-between">
+    <h2>Per-task Score Matrix · {{ filtered_task_ids|length }} / {{ all_task_ids|length }} tasks</h2>
+    <span class="text-dim">点击单元格进入回放</span>
+  </div>
+
+  <div class="chips">
+    {% set modes = [
+      ('all', '全部'),
+      ('regressions', '回归 (v0 < baseline)'),
+      ('improvements', '进步 (v0 > baseline)'),
+      ('both_zero', '都为 0'),
+      ('disagreements', '分歧 > 0.3'),
+    ] %}
+    {% for mode, label in modes %}
+    <a class="chip {% if filter_mode == mode %}active{% endif %}"
+       href="/overview?filter={{ mode }}"
+       hx-get="/api/score_matrix?filter={{ mode }}"
+       hx-target="#matrix-container"
+       hx-swap="innerHTML"
+       hx-push-url="/overview?filter={{ mode }}">{{ label }}</a>
+    {% endfor %}
+  </div>
+
+  <div id="matrix-container">
+    {% include "partials/score_matrix.html" %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,43 @@
+{# Render a single run's KPI row. Expects: kpis (RunKPIs) #}
+<div class="run-kpi">
+  <h3>
+    <span class="badge {% if kpis.run.agent_kind == 'baseline' %}medium{% else %}easy{% endif %}">{{ kpis.run.agent_kind }}</span>
+    <span class="text-mono">{{ kpis.run.run_id }}</span>
+  </h3>
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="label">Micro Score</div>
+      <div class="value">{{ "%.4f"|format(kpis.micro) }}</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">Macro Score</div>
+      <div class="value">{{ "%.4f"|format(kpis.macro) }}</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">提交率</div>
+      <div class="value">{{ "%.0f%%"|format(kpis.submission_rate * 100) }}</div>
+      <div class="sub">{{ (kpis.submission_rate * kpis.n_tasks)|int }}/{{ kpis.n_tasks }}</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">错误步率</div>
+      <div class="value">{{ "%.1f%%"|format(kpis.error_step_rate * 100) }}</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">平均步数</div>
+      <div class="value">{{ "%.1f"|format(kpis.avg_steps) }}</div>
+    </div>
+    {% set pd = kpis.per_difficulty %}
+    {% for diff in ['easy', 'medium', 'hard', 'extreme'] %}
+      {% if pd.get(diff) %}
+      <div class="kpi-card">
+        <div class="label">
+          <span class="badge {{ diff }}">{{ diff }}</span>
+          n={{ pd[diff].n }}
+        </div>
+        <div class="value">{{ "%.3f"|format(pd[diff].mean_score) }}</div>
+        <div class="sub">完美 {{ pd[diff].n_perfect }} · 零分 {{ pd[diff].n_zero }}</div>
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>

@@ -5,6 +5,19 @@ artifacts/
 kddcup2026-starter-kit/data
 kddcup2026-starter-kit/data/
 kddcup2026-starter-kit/artifacts/
+data_agent_v0/artifacts/
+data_agent_baseline_v1/artifacts/
+tools/agent_diagnose/artifacts/
+
+# ---- Docker submission artifacts ----
+*.tar.gz
+data_agent_baseline_v1/.smoke/
+data_agent_baseline_v1/.verify_full/
+data_agent_baseline_v1/.pipeline_logs/
+
+# ---- Run logs ----
+data_agent_v0/run_*.log
+data_agent_baseline_v1/run_*.log
 
 # ---- Secrets (NEVER commit) ----
 .env
@@ -31,7 +44,7 @@ build/
 
 # ---- uv / pip caches ----
 .uv_cache/
-uv.lock
+# uv.lock 是锁文件，必须提交以保证 docker build 可复现
 
 # ---- Tooling ----
 .mypy_cache/
@@ -47,3 +60,15 @@ uv.lock
 
 # ---- Claude Code session ----
 .claude/
+.playwright-mcp/
+
+# ---- 各 agent 包内 data 软链 (->../data, gitignored)，避免误提交悬空链接 ----
+data_agent_v0/data
+data_agent_baseline_v1/data
+
+# ---- 临时文件 ----
+*.bak
+*.local.yaml.bak
+
+# ---- 根目录散落截图（按需手动 git add） ----
+/*.png

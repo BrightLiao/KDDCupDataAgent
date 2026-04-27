@@ -1,0 +1,1195 @@
+{
+  "version_id": "v0_3seed",
+  "git_commit": "",
+  "runs": [
+    "data_agent_v0/artifacts/runs/demo_qwen35_v0_v3_full",
+    "data_agent_v0/artifacts/runs/demo_qwen35_v0_v3_full_s42",
+    "data_agent_v0/artifacts/runs/demo_qwen35_v0_v3_full_s43"
+  ],
+  "gold_root": "data/demo/public/output",
+  "input_root": "data/demo/public/input",
+  "lam": 0.5,
+  "n_tasks": 50,
+  "n_runs": 3,
+  "accuracy": {
+    "micro_mean_score": 0.5283,
+    "macro_mean_score": 0.3714,
+    "by_difficulty": {
+      "easy": {
+        "n": 15,
+        "mean_score": 0.5987,
+        "n_perfect": 7,
+        "n_zero": 3
+      },
+      "medium": {
+        "n": 23,
+        "mean_score": 0.6589,
+        "n_perfect": 10,
+        "n_zero": 4
+      },
+      "hard": {
+        "n": 10,
+        "mean_score": 0.2278,
+        "n_perfect": 0,
+        "n_zero": 5
+      },
+      "extreme": {
+        "n": 2,
+        "mean_score": 0.0,
+        "n_perfect": 0,
+        "n_zero": 2
+      }
+    },
+    "by_data_kind": {
+      "json": {
+        "n": 4,
+        "mean_score": 0.4375
+      },
+      "mixed": {
+        "n": 38,
+        "mean_score": 0.6154
+      },
+      "csv": {
+        "n": 6,
+        "mean_score": 0.213
+      },
+      "db": {
+        "n": 1,
+        "mean_score": 0.0
+      },
+      "?": {
+        "n": 1,
+        "mean_score": 0.0
+      }
+    }
+  },
+  "distribution": {
+    "step_per_task": {
+      "mean": 5.01,
+      "p50": 4.33,
+      "p95": 11,
+      "p99": 14,
+      "max": 14
+    },
+    "approx_tokens_per_task": {
+      "mean": 842.86,
+      "p50": 747.5,
+      "p95": 1954.33,
+      "p99": 3341.33,
+      "max": 3341.33
+    },
+    "submit_attempts": {
+      "once": 42,
+      "multiple": 0,
+      "zero": 8
+    }
+  },
+  "submission": {
+    "submitted_count": 48,
+    "submission_rate": 0.96,
+    "n_perfect": 17,
+    "n_zero": 14
+  },
+  "failure_clusters": {
+    "schema_misunderstanding": 7,
+    "timeout": 5,
+    "other": 2
+  },
+  "consistency": {
+    "runs_per_task": 3,
+    "n_tasks": 50,
+    "all_agree_count": 22,
+    "majority_agree_count": 36,
+    "answer_entropy_mean": 0.2853
+  },
+  "tasks": [
+    {
+      "task_id": "task_11",
+      "difficulty": "easy",
+      "data_kind": "json",
+      "score": 0.6667,
+      "score_min": 0.5,
+      "score_max": 1.0,
+      "per_run_scores": [
+        0.5,
+        0.5,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 3,
+      "approx_tokens": 406.33,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_145",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 4.67,
+      "approx_tokens": 823.33,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_163",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 6.33,
+      "approx_tokens": 1173.67,
+      "submit_attempts": 1,
+      "failure_cluster": "timeout",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_169",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 3.33,
+      "approx_tokens": 361.67,
+      "submit_attempts": 1,
+      "failure_cluster": "timeout",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_173",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.6667,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 12.67,
+      "approx_tokens": 3341.33,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_180",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.3333,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 6,
+      "approx_tokens": 1083.33,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_19",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 3.67,
+      "approx_tokens": 299.33,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_194",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 6,
+      "approx_tokens": 1117.33,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_196",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.6667,
+      "steps": 4.67,
+      "approx_tokens": 649.67,
+      "submit_attempts": 0.67,
+      "failure_cluster": "timeout",
+      "failure_reasons": [
+        "Task failed with uncaught error: Model request failed: Connection error."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_199",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 9.33,
+      "approx_tokens": 1525.33,
+      "submit_attempts": 1,
+      "failure_cluster": "timeout",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_200",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 4,
+      "approx_tokens": 747.67,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_214",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 10,
+      "approx_tokens": 1773.67,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_218",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.6667,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        0.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 8.33,
+      "approx_tokens": 1254.33,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_22",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 4,
+      "approx_tokens": 419,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_24",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 2.33,
+      "approx_tokens": 210,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_243",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.75,
+      "score_min": 0.625,
+      "score_max": 1.0,
+      "per_run_scores": [
+        0.625,
+        0.625,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 3,
+      "approx_tokens": 442.67,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_249",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 11,
+      "approx_tokens": 1954.33,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_25",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 5.67,
+      "approx_tokens": 902,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_250",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 14,
+      "approx_tokens": 2656.33,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_257",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.5,
+      "score_min": 0.25,
+      "score_max": 1.0,
+      "per_run_scores": [
+        0.25,
+        1.0,
+        0.25
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 5.33,
+      "approx_tokens": 904.33,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_259",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.5714,
+      "score_min": 0.5714,
+      "score_max": 0.5714,
+      "per_run_scores": [
+        0.5714,
+        0.5714,
+        0.5714
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 4.33,
+      "approx_tokens": 852,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_26",
+      "difficulty": "easy",
+      "data_kind": "json",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 4.33,
+      "approx_tokens": 347.33,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_261",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.6667,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        0.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 4,
+      "approx_tokens": 822.67,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_269",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.6667,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        0.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 5.67,
+      "approx_tokens": 799.33,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_27",
+      "difficulty": "easy",
+      "data_kind": "json",
+      "score": 0.0833,
+      "score_min": 0.0833,
+      "score_max": 0.0833,
+      "per_run_scores": [
+        0.0833,
+        0.0833,
+        0.0833
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 1.67,
+      "approx_tokens": 200,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_283",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 0.3333,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.6667,
+      "steps": 4.33,
+      "approx_tokens": 730,
+      "submit_attempts": 0.67,
+      "failure_cluster": "other",
+      "failure_reasons": [
+        "Task failed with uncaught error: Model request failed: Connection error."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_287",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 5.67,
+      "approx_tokens": 1060,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_292",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 7.67,
+      "approx_tokens": 1305.67,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_303",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 7.67,
+      "approx_tokens": 1713.33,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_305",
+      "difficulty": "medium",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 4.33,
+      "approx_tokens": 809,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_330",
+      "difficulty": "hard",
+      "data_kind": "csv",
+      "score": 0.5833,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        0.0,
+        0.75
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.6667,
+      "steps": 6.67,
+      "approx_tokens": 760,
+      "submit_attempts": 0.67,
+      "failure_cluster": "",
+      "failure_reasons": [
+        "Task failed with uncaught error: Model request failed: Connection error."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_344",
+      "difficulty": "hard",
+      "data_kind": "csv",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.6667,
+      "steps": 7.67,
+      "approx_tokens": 1197.67,
+      "submit_attempts": 0.67,
+      "failure_cluster": "timeout",
+      "failure_reasons": [
+        "Task failed with uncaught error: Model request failed: Connection error."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_349",
+      "difficulty": "hard",
+      "data_kind": "csv",
+      "score": 0.6667,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        0.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.6667,
+      "steps": 1.33,
+      "approx_tokens": 131.67,
+      "submit_attempts": 0.67,
+      "failure_cluster": "",
+      "failure_reasons": [
+        "Task failed with uncaught error: Model request failed: Connection error."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_350",
+      "difficulty": "hard",
+      "data_kind": "mixed",
+      "score": 0.6667,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        0.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.6667,
+      "steps": 8.33,
+      "approx_tokens": 1622.33,
+      "submit_attempts": 0.67,
+      "failure_cluster": "",
+      "failure_reasons": [
+        "Task failed with uncaught error: Model request failed: Connection error."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_352",
+      "difficulty": "hard",
+      "data_kind": "csv",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.3333,
+      "steps": 5.67,
+      "approx_tokens": 1752,
+      "submit_attempts": 0.33,
+      "failure_cluster": "schema_misunderstanding",
+      "failure_reasons": [
+        "Task failed with uncaught error: 'AgentConfig' object has no attribute 'seed'",
+        "Task failed with uncaught error: Model request failed: Connection error."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_355",
+      "difficulty": "hard",
+      "data_kind": "csv",
+      "score": 0.0278,
+      "score_min": 0.0,
+      "score_max": 0.0833,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0833
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.3333,
+      "steps": 4,
+      "approx_tokens": 539.33,
+      "submit_attempts": 0.33,
+      "failure_cluster": "schema_misunderstanding",
+      "failure_reasons": [
+        "Task failed with uncaught error: 'AgentConfig' object has no attribute 'seed'",
+        "Task failed with uncaught error: Model request failed: Connection error."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_379",
+      "difficulty": "hard",
+      "data_kind": "csv",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.3333,
+      "steps": 3,
+      "approx_tokens": 581.67,
+      "submit_attempts": 0.33,
+      "failure_cluster": "schema_misunderstanding",
+      "failure_reasons": [
+        "Task failed with uncaught error: 'AgentConfig' object has no attribute 'seed'",
+        "Task failed with uncaught error: Model request failed: Connection error."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_38",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 0.5643,
+      "score_min": 0.55,
+      "score_max": 0.5714,
+      "per_run_scores": [
+        0.55,
+        0.5714,
+        0.5714
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 4.67,
+      "approx_tokens": 574.33,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_396",
+      "difficulty": "hard",
+      "data_kind": "json",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.3333,
+      "steps": 5.67,
+      "approx_tokens": 992.33,
+      "submit_attempts": 0.33,
+      "failure_cluster": "schema_misunderstanding",
+      "failure_reasons": [
+        "Task failed with uncaught error: 'AgentConfig' object has no attribute 'seed'",
+        "Task failed with uncaught error: Model request failed: Connection error."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_408",
+      "difficulty": "hard",
+      "data_kind": "db",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.3333,
+      "steps": 4.33,
+      "approx_tokens": 411.33,
+      "submit_attempts": 0.33,
+      "failure_cluster": "schema_misunderstanding",
+      "failure_reasons": [
+        "Task failed with uncaught error: 'AgentConfig' object has no attribute 'seed'",
+        "Task failed with uncaught error: Model request failed: Connection error."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_415",
+      "difficulty": "hard",
+      "data_kind": "mixed",
+      "score": 0.3333,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 0.3333,
+      "steps": 2.33,
+      "approx_tokens": 625.33,
+      "submit_attempts": 0.33,
+      "failure_cluster": "schema_misunderstanding",
+      "failure_reasons": [
+        "Task failed with uncaught error: 'AgentConfig' object has no attribute 'seed'",
+        "Task failed with uncaught error: Model request failed: Connection error."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_418",
+      "difficulty": "extreme",
+      "data_kind": "?",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": false,
+      "submit_rate_across_runs": 0.0,
+      "steps": 0,
+      "approx_tokens": 0,
+      "submit_attempts": 0,
+      "failure_cluster": "schema_misunderstanding",
+      "failure_reasons": [
+        "Task failed with uncaught error: 'AgentConfig' object has no attribute 'seed'",
+        "Task failed with uncaught error: Model request failed: Connection error.",
+        "Task timed out after 900 seconds."
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_420",
+      "difficulty": "extreme",
+      "data_kind": "mixed",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": false,
+      "submit_rate_across_runs": 0.0,
+      "steps": 0,
+      "approx_tokens": 0,
+      "submit_attempts": 0,
+      "failure_cluster": "other",
+      "failure_reasons": [
+        "Task failed with uncaught error: 'AgentConfig' object has no attribute 'seed'",
+        "Task failed with uncaught error: Model request failed: Connection error.",
+        "Task failed with uncaught error: Model request failed: Error code: 400 - {'error': {'message': '<400> InternalError.Algo.InvalidParameter: Range of input length should be [1, 258048]', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_parameter_error'}, 'id': 'chatcmpl-8be46b27-1a78-938d-ac0c-e757e032d9ce', 'request_id': '8be46b27-1a78-938d-ac0c-e757e032d9ce'}"
+      ],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_64",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 1.67,
+      "approx_tokens": 226,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_67",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 2,
+      "approx_tokens": 128,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_74",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 2,
+      "approx_tokens": 145,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_75",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 1.0,
+      "score_min": 1.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 1.33,
+      "approx_tokens": 279.33,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_80",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 0.0,
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 3.67,
+      "approx_tokens": 412.67,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_86",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 0.3333,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 4.33,
+      "approx_tokens": 747.33,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    },
+    {
+      "task_id": "task_89",
+      "difficulty": "easy",
+      "data_kind": "mixed",
+      "score": 0.3333,
+      "score_min": 0.0,
+      "score_max": 1.0,
+      "per_run_scores": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "submitted": true,
+      "submit_rate_across_runs": 1.0,
+      "steps": 4.67,
+      "approx_tokens": 331.67,
+      "submit_attempts": 1,
+      "failure_cluster": "",
+      "failure_reasons": [],
+      "n_runs": 3
+    }
+  ]
+}

@@ -20,53 +20,18 @@ from __future__ import annotations
 import argparse
 import csv
 import json
-import math
-import re
+import sys
 from collections import Counter
 from dataclasses import dataclass, field, asdict
 from pathlib import Path
 from statistics import mean
 
-DATE_PATTERNS = [
-    re.compile(r"^\d{4}-\d{2}-\d{2}$"),
-    re.compile(r"^\d{4}/\d{1,2}/\d{1,2}$"),
-    re.compile(r"^\d{4}\.\d{1,2}\.\d{1,2}$"),
-]
-ISO_DATE_RE = re.compile(r"^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})(?:[T ].*)?$")
+# Ensure repo root on sys.path so `python src/eval/scorer.py` (run from repo root) finds `src.eval.normalize`.
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
 
-
-def normalize_value(v) -> str:
-    """归一化单值到字符串。规则按 §6.5 + §7.1。"""
-    if v is None:
-        return ""
-    if isinstance(v, float):
-        if math.isnan(v):
-            return ""
-        # 浮点保留 2 位小数（与 gold 对齐），但允许 1e-6 浮点抖动
-        return f"{round(v, 2):.2f}".rstrip("0").rstrip(".") or "0"
-    if isinstance(v, bool):
-        return "1" if v else "0"
-    if isinstance(v, int):
-        return str(v)
-    s = str(v).strip()
-    if s == "" or s.lower() in ("nan", "none", "null", "n/a"):
-        return ""
-    # 尝试数字
-    try:
-        x = float(s)
-        if math.isnan(x):
-            return ""
-        if x == int(x) and "." not in s and "e" not in s.lower():
-            return str(int(x))
-        return f"{round(x, 2):.2f}".rstrip("0").rstrip(".") or "0"
-    except ValueError:
-        pass
-    # 尝试日期
-    m = ISO_DATE_RE.match(s)
-    if m:
-        return f"{int(m.group(1)):04d}-{int(m.group(2)):02d}-{int(m.group(3)):02d}"
-    # 文本：去多余空格 + 大小写归一（multiset 字符串比对常见做法）
-    return " ".join(s.split())
+from src.eval.normalize import normalize_value
 
 
 def read_csv_table(path: Path) -> tuple[list[str], list[list[str]]]:

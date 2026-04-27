@@ -1,0 +1,42 @@
+[build-system]
+requires = ["hatchling>=1.27.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "data-agent-baseline-v1"
+version = "0.1.0"
+description = "baseline-v1 data agent: baseline ReAct loop + L1 CodeAct + L2 schema preload + L3 shape spec (no planner, no difficulty routing)"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "data-agent-baseline",
+    "data-agent-v0",
+    "pandas>=2.3.3",
+    "numpy>=2.2.6",
+    "openai>=2.28.0",
+    "pyyaml>=6.0.2",
+    "rich>=13.9.4",
+    "typer>=0.15.2",
+    "pyarrow>=23.0.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.5",
+    "ruff>=0.11.0",
+]
+
+[project.scripts]
+agent-baseline-v1 = "data_agent_baseline_v1.cli:main"
+
+[tool.uv.sources]
+data-agent-baseline = { path = "../kddcup2026-starter-kit", editable = true }
+data-agent-v0 = { path = "../data_agent_v0", editable = true }
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/data_agent_baseline_v1"]

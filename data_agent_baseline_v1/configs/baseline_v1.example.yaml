@@ -1,0 +1,25 @@
+dataset:
+  root_path: data/public/input
+
+agent:
+  model: YOUR_MODEL_NAME
+  api_base: YOUR_API_BASE_URL
+  api_key: YOUR_API_KEY
+  max_steps: 16
+  temperature: 0.0
+
+run:
+  output_dir: artifacts/runs
+  run_id: example_run_id
+  max_workers: 4
+  task_timeout_seconds: 900
+
+# baseline-v1 specific (no planner, flat ReAct only)
+executor:
+  flat_max_steps: 16             # 与 agent.max_steps 取小者
+  step_timeout_seconds: 60       # 单次代码块执行超时
+  max_consecutive_failures: 3    # 连续 N 步同错触发 hint，逼换路径或 force-submit
+
+preload:
+  max_csv_size_mb: 500           # 单 CSV 上限，超过仅 schema 不入 ns
+  inject_knowledge_md: true      # 是否把 knowledge.md / doc/*.md 全文注入 system prompt

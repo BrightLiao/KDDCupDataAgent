@@ -28,6 +28,7 @@ class AgentConfig:
     api_key: str = ""
     max_steps: int = 16
     temperature: float = 0.0
+    seed: int | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -67,12 +68,15 @@ def load_app_config(config_path: Path) -> AppConfig:
     dataset_config = DatasetConfig(
         root_path=_path_value(dataset_payload.get("root_path"), dataset_defaults.root_path),
     )
+    raw_seed = agent_payload.get("seed", agent_defaults.seed)
+    seed_value = None if raw_seed is None or raw_seed == "" else int(raw_seed)
     agent_config = AgentConfig(
         model=str(agent_payload.get("model", agent_defaults.model)),
         api_base=str(agent_payload.get("api_base", agent_defaults.api_base)),
         api_key=str(agent_payload.get("api_key", agent_defaults.api_key)),
         max_steps=int(agent_payload.get("max_steps", agent_defaults.max_steps)),
         temperature=float(agent_payload.get("temperature", agent_defaults.temperature)),
+        seed=seed_value,
     )
     raw_run_id = run_payload.get("run_id")
     run_id = run_defaults.run_id

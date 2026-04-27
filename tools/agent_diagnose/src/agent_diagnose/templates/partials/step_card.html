@@ -1,0 +1,51 @@
+{# Single step card. Expects: step (DisplayStep), step_anchor (str) #}
+{% set kind_cls = 'submit' if step.submitted else ('ok' if step.ok else 'fail') %}
+<div id="{{ step_anchor }}" class="step-card {{ kind_cls }}">
+  <div class="step-header">
+    <span class="step-no">#{{ step.step_index }}</span>
+    <span class="text-mono">{{ step.action }}</span>
+    {% if step.submitted %}
+      <span class="badge ok">submit</span>
+    {% elif step.ok %}
+      <span class="badge ok">ok</span>
+    {% else %}
+      <span class="badge fail">fail</span>
+    {% endif %}
+  </div>
+
+  {% if step.code %}
+  <div class="step-section">
+    <div class="section-label">Code</div>
+    <pre class="text-mono">{{ step.code }}</pre>
+  </div>
+  {% endif %}
+
+  {% if step.output %}
+  <div class="step-section">
+    <div class="section-label">Output</div>
+    <pre class="text-mono">{{ step.output[:4000] }}{% if step.output|length > 4000 %}
+
+… [truncated, total {{ step.output|length }} chars]{% endif %}</pre>
+  </div>
+  {% endif %}
+
+  {% if step.error %}
+  <div class="step-section error">
+    <div class="section-label">Error / Traceback</div>
+    <pre class="text-mono">{{ step.error[:4000] }}{% if step.error|length > 4000 %}
+
+… [truncated, total {{ step.error|length }} chars]{% endif %}</pre>
+  </div>
+  {% endif %}
+
+  {% if step.raw_response %}
+  <div class="step-section">
+    <details>
+      <summary>Raw LLM response ({{ step.raw_response|length }} chars)</summary>
+      <pre class="text-mono">{{ step.raw_response[:8000] }}{% if step.raw_response|length > 8000 %}
+
+… [truncated]{% endif %}</pre>
+    </details>
+  </div>
+  {% endif %}
+</div>

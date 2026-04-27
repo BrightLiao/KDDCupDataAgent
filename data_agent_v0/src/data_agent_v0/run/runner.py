@@ -1,8 +1,13 @@
+"""v0 runner —— 镜像 starter-kit 的 run_single_task / run_benchmark 输出契约。
+
+每 task 在独立子进程内执行（timeout 兜底）；trace.json 在 baseline 字段基础上
+追加 v0 特有的 plan / replan_events / shape_spec / routed_branch。
+"""
 from __future__ import annotations
 
 import csv
 import json
-import multiprocessing
+import multiprocessing as mp
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
@@ -12,10 +17,10 @@ from time import perf_counter
 from typing import Any
 
 from data_agent_baseline.agents.model import OpenAIModelAdapter
-from data_agent_baseline.agents.react import ReActAgent, ReActAgentConfig
 from data_agent_baseline.benchmark.dataset import DABenchPublicDataset
-from data_agent_baseline.config import AppConfig
-from data_agent_baseline.tools.registry import ToolRegistry, create_default_tool_registry
+
+from data_agent_v0.config import V0AppConfig
+from data_agent_v0.orchestrator import Orchestrator
 
 
 @dataclass(frozen=True, slots=True)
@@ -45,7 +50,6 @@ def create_run_id() -> str:
 def resolve_run_id(run_id: str | None = None) -> str:
     if run_id is None:
         return create_run_id()
-
     normalized = run_id.strip()
     if not normalized:
         raise ValueError("run_id must not be empty.")
@@ -57,14 +61,11 @@ def resolve_run_id(run_id: str | None = None) -> str:
 def create_run_output_dir(output_root: Path, *, run_id: str | None = None) -> tuple[str, Path]:
     effective_run_id = resolve_run_id(run_id)
     run_output_dir = output_root / effective_run_id
-    # PATCH: allow reusing run_id when running tasks one-by-one (previously
-    # exist_ok=False blocked the 2nd run-task call); retain isolation by still
-    # ensuring per-task subdirs are not silently overwritten elsewhere.
     run_output_dir.mkdir(parents=True, exist_ok=True)
     return effective_run_id, run_output_dir
 
 
-def build_model_adapter(config: AppConfig):
+def build_model_adapter(config: V0AppConfig) -> OpenAIModelAdapter:
     return OpenAIModelAdapter(
         model=config.agent.model,
         api_base=config.agent.api_base,
@@ -74,8 +75,12 @@ def build_model_adapter(config: AppConfig):
     )
 
 
+# ---------------------------------------------------------------------------
+# Output writers
+# ---------------------------------------------------------------------------
+
 def _write_json(path: Path, payload: dict[str, Any]) -> None:
-    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n")
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2, default=str) + "\n")
 
 
 def _write_csv(path: Path, columns: list[str], rows: list[list[Any]]) -> None:
@@ -94,52 +99,39 @@ def _failure_run_result_payload(task_id: str, failure_reason: str) -> dict[str, 
         "steps": [],
         "failure_reason": failure_reason,
         "succeeded": False,
+        "v0_meta": {},
     }
 
 
-def _run_single_task_core(
-    *,
-    task_id: str,
-    config: AppConfig,
-    model=None,
-    tools: ToolRegistry | None = None,
-) -> dict[str, Any]:
+def _run_single_task_core(*, task_id: str, config: V0AppConfig) -> dict[str, Any]:
     public_dataset = DABenchPublicDataset(config.dataset.root_path)
     task = public_dataset.get_task(task_id)
 
-    agent = ReActAgent(
-        model=model or build_model_adapter(config),
-        tools=tools or create_default_tool_registry(),
-        config=ReActAgentConfig(max_steps=config.agent.max_steps),
-    )
-    run_result = agent.run(task)
-    return run_result.to_dict()
+    model = build_model_adapter(config)
+    orchestrator = Orchestrator(model=model, config=config)
+    run_result, ot = orchestrator.run(task)
+    payload = run_result.to_dict()
+    payload["v0_meta"] = ot.to_dict()
+    return payload
 
 
-def _run_single_task_in_subprocess(task_id: str, config: AppConfig, queue: multiprocessing.Queue[Any]) -> None:
+def _run_single_task_in_subprocess(
+    task_id: str, config: V0AppConfig, queue: mp.Queue
+) -> None:
     try:
-        queue.put(
-            {
-                "ok": True,
-                "run_result": _run_single_task_core(task_id=task_id, config=config),
-            }
-        )
+        queue.put({"ok": True, "run_result": _run_single_task_core(task_id=task_id, config=config)})
     except BaseException as exc:  # noqa: BLE001
-        queue.put(
-            {
-                "ok": False,
-                "error": str(exc),
-            }
-        )
+        queue.put({"ok": False, "error": str(exc)})
 
 
-def _run_single_task_with_timeout(*, task_id: str, config: AppConfig) -> dict[str, Any]:
+def _run_single_task_with_timeout(*, task_id: str, config: V0AppConfig) -> dict[str, Any]:
     timeout_seconds = config.run.task_timeout_seconds
     if timeout_seconds <= 0:
         return _run_single_task_core(task_id=task_id, config=config)
 
-    queue: multiprocessing.Queue[Any] = multiprocessing.Queue()
-    process = multiprocessing.Process(
+    ctx = mp.get_context("spawn")
+    queue: mp.Queue = ctx.Queue()
+    process = ctx.Process(
         target=_run_single_task_in_subprocess,
         args=(task_id, config, queue),
     )
@@ -158,8 +150,7 @@ def _run_single_task_with_timeout(*, task_id: str, config: AppConfig) -> dict[st
         exit_code = process.exitcode
         if exit_code not in (None, 0):
             return _failure_run_result_payload(
-                task_id,
-                f"Task exited unexpectedly with exit code {exit_code}.",
+                task_id, f"Task exited unexpectedly with exit code {exit_code}."
             )
         return _failure_run_result_payload(task_id, "Task exited without returning a result.")
 
@@ -169,7 +160,9 @@ def _run_single_task_with_timeout(*, task_id: str, config: AppConfig) -> dict[st
     return _failure_run_result_payload(task_id, f"Task failed with uncaught error: {result['error']}")
 
 
-def _write_task_outputs(task_id: str, run_output_dir: Path, run_result: dict[str, Any]) -> TaskRunArtifacts:
+def _write_task_outputs(
+    task_id: str, run_output_dir: Path, run_result: dict[str, Any]
+) -> TaskRunArtifacts:
     task_output_dir = run_output_dir / task_id
     task_output_dir.mkdir(parents=True, exist_ok=True)
     trace_path = task_output_dir / "trace.json"
@@ -196,65 +189,48 @@ def _write_task_outputs(task_id: str, run_output_dir: Path, run_result: dict[str
 
 
 def run_single_task(
-    *,
-    task_id: str,
-    config: AppConfig,
-    run_output_dir: Path,
-    model=None,
-    tools: ToolRegistry | None = None,
+    *, task_id: str, config: V0AppConfig, run_output_dir: Path
 ) -> TaskRunArtifacts:
     started_at = perf_counter()
-    if model is None and tools is None:
-        run_result = _run_single_task_with_timeout(task_id=task_id, config=config)
-    else:
-        run_result = _run_single_task_core(task_id=task_id, config=config, model=model, tools=tools)
+    run_result = _run_single_task_with_timeout(task_id=task_id, config=config)
     run_result["e2e_elapsed_seconds"] = round(perf_counter() - started_at, 3)
     return _write_task_outputs(task_id, run_output_dir, run_result)
 
 
 def run_benchmark(
     *,
-    config: AppConfig,
-    model=None,
-    tools: ToolRegistry | None = None,
+    config: V0AppConfig,
     limit: int | None = None,
     progress_callback: Callable[[TaskRunArtifacts], None] | None = None,
 ) -> tuple[Path, list[TaskRunArtifacts]]:
-    effective_run_id, run_output_dir = create_run_output_dir(config.run.output_dir, run_id=config.run.run_id)
+    effective_run_id, run_output_dir = create_run_output_dir(
+        config.run.output_dir, run_id=config.run.run_id
+    )
 
     dataset = DABenchPublicDataset(config.dataset.root_path)
     tasks = dataset.iter_tasks()
     if limit is not None:
         tasks = tasks[:limit]
+    task_ids = [task.task_id for task in tasks]
 
     effective_workers = config.run.max_workers
     if effective_workers < 1:
         raise ValueError("max_workers must be at least 1.")
-    if model is not None or tools is not None:
-        effective_workers = 1
-
-    task_ids = [task.task_id for task in tasks]
 
     task_artifacts: list[TaskRunArtifacts]
     if effective_workers == 1:
-        shared_model = model or build_model_adapter(config)
-        shared_tools = tools or create_default_tool_registry()
         task_artifacts = []
         for task_id in task_ids:
             artifact = run_single_task(
-                task_id=task_id,
-                config=config,
-                run_output_dir=run_output_dir,
-                model=shared_model,
-                tools=shared_tools,
+                task_id=task_id, config=config, run_output_dir=run_output_dir
             )
             task_artifacts.append(artifact)
             if progress_callback is not None:
                 progress_callback(artifact)
     else:
-        with ThreadPoolExecutor(max_workers=effective_workers) as executor:
+        with ThreadPoolExecutor(max_workers=effective_workers) as pool:
             future_to_index = {
-                executor.submit(
+                pool.submit(
                     run_single_task,
                     task_id=task_id,
                     config=config,
@@ -262,13 +238,13 @@ def run_benchmark(
                 ): index
                 for index, task_id in enumerate(task_ids)
             }
-            indexed_artifacts: list[TaskRunArtifacts | None] = [None] * len(task_ids)
+            indexed: list[TaskRunArtifacts | None] = [None] * len(task_ids)
             for future in as_completed(future_to_index):
                 artifact = future.result()
-                indexed_artifacts[future_to_index[future]] = artifact
+                indexed[future_to_index[future]] = artifact
                 if progress_callback is not None:
                     progress_callback(artifact)
-            task_artifacts = [artifact for artifact in indexed_artifacts if artifact is not None]
+            task_artifacts = [a for a in indexed if a is not None]
 
     summary_path = run_output_dir / "summary.json"
     _write_json(
@@ -276,9 +252,9 @@ def run_benchmark(
         {
             "run_id": effective_run_id,
             "task_count": len(task_artifacts),
-            "succeeded_task_count": sum(1 for artifact in task_artifacts if artifact.succeeded),
+            "succeeded_task_count": sum(1 for a in task_artifacts if a.succeeded),
             "max_workers": effective_workers,
-            "tasks": [artifact.to_dict() for artifact in task_artifacts],
+            "tasks": [a.to_dict() for a in task_artifacts],
         },
     )
     return run_output_dir, task_artifacts
