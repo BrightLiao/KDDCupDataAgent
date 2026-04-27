@@ -60,9 +60,12 @@
 │   └── run_v0.sh
 │
 ├── tools/agent_diagnose/                    # FastAPI + Jinja2 + HTMX 诊断面板
-│   ├── src/agent_diagnose/                  # data layer / normalize / scoring / 路由
+│   ├── src/agent_diagnose/                  # data / normalize（含 prompt 重建）/ stats / scoring / 路由
+│   │   ├── templates/                       # overview / task_replay / eval + partials
+│   │   └── static/                          # style.css / htmx / Prism (vendored)
 │   ├── tests/
-│   └── run_diagnose.sh                      # uvicorn :8000
+│   ├── run_diagnose.sh                      # 本地 dev :8000 --reload
+│   └── serve_remote.sh                      # 远端 nohup 部署 0.0.0.0:8000
 │
 ├── src/eval/
 │   ├── scorer.py                            # 列 multiset 评分器（§6.5/§7.1）
@@ -201,19 +204,55 @@ bash data_agent_baseline_v1/submit_pipeline.sh team0042 baseline_v1_$(date +%Y%m
 
 [tools/agent_diagnose/](tools/agent_diagnose/) — FastAPI + Jinja2 + HTMX 内部诊断面板，无认证，部署到云服务器上小队伍直接看。
 
+### 启动
+
 ```bash
 cd tools/agent_diagnose
-uv sync && ./run_diagnose.sh    # uvicorn :8000
+
+# 本地开发（127.0.0.1:8000，--reload）
+uv sync && ./run_diagnose.sh
+
+# 远端 / 云服务器（0.0.0.0:8000，nohup 后台，pid → .diagnose.pid，log → diagnose.log）
+./serve_remote.sh 8000
 ```
 
-支持两个核心场景：
+### Agent 命名规范（重要）
 
-- **跨 run 概览矩阵**（`/overview`）：N 行 KPI（micro/macro/提交率/错误步率）+ 50 行 × N 列染色矩阵。chip 切筛选 `regressions / improvements / both_zero / disagreements`，单元格点击跳单题回放。
-- **单题单 run 回放**（`/task/<id>?run=<run_id>`）：左侧粘性 step 时间轴，右主区每步一张卡片（raw_response / Prism Python 高亮 code / observation 分块），底部 `prediction.csv` vs `gold.csv` 列对齐 diff。
+- **baseline** —— 原始 baseline（react + JSON action）
+- **baseline_v\*** —— 在 baseline 之上修补问题的迭代（CodeAct + 超参，譬如 baseline_v1）
+- **agent_v\*** —— 架构换代后的版本（agent_v0 = 架构重写第 0 版，未来 agent_v1, agent_v2 ...）
 
-数据源 = 现有 `<package>/artifacts/runs/<run_id>/task_*/{trace.json, prediction.csv}` 与 `reports/<run_id>_scored.json`。仅读，不改 baseline / v0 / scorer。
+完整顺序见 [tools/agent_diagnose/src/agent_diagnose/config.py](tools/agent_diagnose/src/agent_diagnose/config.py) 的 `AGENT_KIND_ORDER`，新版本只在这里加一行就能让表格 / 卡片 / 矩阵 / 颜色族自动跟上。
 
-下版本预留：同题多 run 并排 + 人工 step 标注（`labels.jsonl` append-only）。
+### `/overview` —— 跨 agent 看大盘
+
+仅展示**完整跑完 50 题**的 run，半成品自动隐藏。三段：
+
+1. **各次运行核心指标** —— 表格：智能体 / 运行实例 / 题数 / 微观分 / 宏观分 / 提交率 / 错误步率 / 平均步数 / 难度均分（4 列）。表头 `ⓘ` 鼠标悬停看每个指标的算法定义。
+2. **各类智能体核心指标对比（多 seed 均值）** —— 每个 agent_kind 一张五维卡，纵向堆叠（baseline → baseline_v\* → agent_v\*），跨档 ▲ 进步 / ▼ 退步箭头一眼可见架构升级带来的相对变化。
+3. **逐题得分矩阵** —— 列按 **agent_kind 聚合多 seed 均值**（不是逐 run 列，避免横向溢出），单元格 `×N` 标记参与平均的 seed 数。chip 切 `regressions / improvements / both_zero / disagreements` 筛 (HTMX 局部刷新)。点击跳单题回放，链接到该 kind 的"代表 run"。
+
+### `/task/<id>?run=<run_id>` —— 单题单 run 五栏回放
+
+- **题目卡** —— question / 难度 / score / elapsed / steps / v0 路由分支 / shape_spec / plan，knowledge.md 折叠原文。
+- **左侧粘性 step 时间轴** —— 锚点跳转，每条带 ok/fail/submit 色块。
+- **右主区每步五栏（按 LLM 思考时序自上而下）**：
+  1. **① Intent** —— 自动抽取的"这步要做什么"（baseline `thought` / 代码顶部 `# 注释` / 启发式 `pd.read_csv` / `groupby` / `submit` 等）
+  2. **② LLM Input** —— *诊断层重建*的 messages（折叠多条），`system / user (task) / assistant (step n) / user (obs n)` 角色染色。诊断层导入 baseline / v0 prompt builders 回放，**不依赖 agent 端埋点**；标 `ⓘ reconstructed`
+  3. **③ LLM Output** —— `raw_response` 中切出的 *Thinking 散文 + 代码顶部注释*（紫色斜体框）+ 折叠原始 raw response
+  4. **④ Code** —— Prism Python 高亮 + Copy 按钮
+  5. **⑤ Execution Result** —— stdout / stderr 横排两列，错误步红框聚焦
+- **底部 `prediction.csv` vs `gold.csv`** —— 列 multiset diff（matched / extra / missing），与 scorer 同口径
+
+### `/eval` —— enhanced_eval 报告对比
+
+读 `reports/<version>_eval_report.json`，base / challenger 双卡 + 自动 markdown diff，覆盖 EVAL_PLAN_30D §1 全部五类指标（accuracy / distribution / submission / consistency / failure_clusters）。
+
+### 数据源 / 边界
+
+仅读 `<package>/artifacts/runs/<run_id>/task_*/{trace.json, prediction.csv}` + `reports/<run_id>_scored.json`，**不改 baseline / v0 / scorer**。LLM Input 重建走诊断层，agent 端 0 改动。
+
+下版本：同题多 run 并排 + 人工 step 标注（`labels.jsonl` append-only）。
 
 ---
 
