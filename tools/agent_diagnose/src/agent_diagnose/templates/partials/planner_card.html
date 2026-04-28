@@ -1,0 +1,56 @@
+{# 单次 planner LLM 调用卡片：prompt + 输出 plan。
+   Expects: pc (PlannerCall), card_anchor (str) #}
+<div id="{{ card_anchor }}" class="planner-card {% if pc.kind == 'replan' %}replan{% endif %}">
+  <div class="planner-head">
+    <span class="planner-tag">PLANNER · {{ pc.kind }}</span>
+    <span class="planner-label">{{ pc.label }}</span>
+    <span class="text-dim text-mono" style="margin-left: auto; font-size: 12px;">
+      {{ pc.output_plan|length }} steps · prompt {{ pc.prompt|length }} chars
+      · <span title="Reconstructed by diagnose layer; schema_summary slot is runtime-injected and replaced by placeholder">ⓘ reconstructed</span>
+    </span>
+  </div>
+
+  {% if pc.replan_event %}
+  <div class="planner-section">
+    <div class="section-label">Trigger</div>
+    <div class="planner-trigger">
+      consecutive failure signature
+      <code>{{ pc.replan_event.get('signature', '?') }}</code>
+      · replan #{{ pc.replan_event.get('replan_count', '?') }}
+      · at step {{ pc.replan_event.get('at_step', '?') }}
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="planner-section">
+    <details>
+      <summary>
+        <span class="section-label inline">LLM Input (planner prompt)</span>
+      </summary>
+      <pre class="text-mono planner-prompt">{{ pc.prompt }}</pre>
+    </details>
+  </div>
+
+  <div class="planner-section">
+    <div class="section-label">Output plan</div>
+    {% if pc.output_plan %}
+      <ol class="plan-list">
+        {% for s in pc.output_plan %}
+        <li>
+          <div class="plan-desc">{{ s.get('description', '') }}</div>
+          {% if s.get('success_criterion') %}
+            <div class="plan-success text-dim">Success: {{ s.get('success_criterion') }}</div>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ol>
+      {% if pc.kind == 'replan' %}
+        <div class="text-dim" style="font-size: 12px; margin-top: 6px;">
+          [note] trace.json 只保留最终 plan，本卡片显示的与初始 plan 是同一份。
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="empty">无 plan</div>
+    {% endif %}
+  </div>
+</div>

@@ -19,6 +19,7 @@ prompt 重建规则（不依赖 agent 埋点）：
 """
 from __future__ import annotations
 
+import json
 import re
 from dataclasses import dataclass, field
 from typing import Any
@@ -73,6 +74,20 @@ class StaticTaskRecord:
     task_id: str
     difficulty: str
     question: str
+
+
+@dataclass(frozen=True)
+class PlannerCall:
+    """一次独立的 Planner LLM 调用 —— 由 orchestrator._run_plan_executor 触发。
+
+    trace.json 不存 planner 的 prompt / 完整 messages，只存最终 plan + replan_events。
+    诊断层据此重建 prompt（schema_summary 在运行时注入，无法精确还原，标 placeholder）。"""
+    kind: str            # "create_plan" | "replan"
+    label: str           # UI: "Initial plan (before step 1)" / "Replan #2 (after step 7)"
+    at_step: int         # 0 for initial, replan_event.at_step for replans
+    prompt: str          # 重建的 user prompt（planner 只发 user，无 system）
+    output_plan: list[dict[str, Any]]  # plan JSON（仅最终 plan 存在 trace）
+    replan_event: dict[str, Any] | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -475,3 +490,115 @@ class _TaskShim:
         self.task_id = rec.task_id
         self.difficulty = rec.difficulty
         self.question = rec.question
+
+
+# ---------------------------------------------------------------------------
+# Planner LLM call reconstruction
+# ---------------------------------------------------------------------------
+
+_RUNTIME_SCHEMA_PLACEHOLDER = (
+    "[runtime-injected from REPL preload — not stored in trace.json. "
+    "Compact form: 'df_<name> (rows): [cols...]', 'json_<name> (records, top_keys)', "
+    "'conn_<name>: tables=[(name, rows), ...]'.]"
+)
+
+
+def extract_planner_calls(
+    trace: dict[str, Any],
+    task_input: dict[str, Any] | None,
+) -> list[PlannerCall]:
+    """从 trace 推出 planner 发生的 N+1 次 LLM 调用：1 initial + N replan。
+    flat 路径或非 plan-executor branch 返回空列表。"""
+    v0_meta = trace.get("v0_meta") or {}
+    if v0_meta.get("routed_branch") != "plan_executor":
+        return []
+    plan = v0_meta.get("plan") or []
+    if not plan:
+        return []
+
+    out: list[PlannerCall] = []
+    out.append(PlannerCall(
+        kind="create_plan",
+        label="Initial plan (before step 1)",
+        at_step=0,
+        prompt=_render_planner_initial_prompt(trace, task_input),
+        output_plan=plan,
+    ))
+
+    for ev in (v0_meta.get("replan_events") or []):
+        out.append(PlannerCall(
+            kind="replan",
+            label=f"Replan #{ev.get('replan_count')} (after step {ev.get('at_step')})",
+            at_step=int(ev.get("at_step") or 0),
+            prompt=_render_planner_replan_prompt(trace, task_input, ev),
+            output_plan=plan,  # trace 仅保留最终 plan
+            replan_event=ev,
+        ))
+    return out
+
+
+def _render_planner_initial_prompt(
+    trace: dict[str, Any],
+    task_input: dict[str, Any] | None,
+) -> str:
+    try:
+        from data_agent_v0.planner import _INITIAL_PLAN_PROMPT
+    except Exception as exc:  # noqa: BLE001
+        return f"(planner module not importable: {exc!r})"
+
+    v0_meta = trace.get("v0_meta") or {}
+    task = (task_input or {}).get("task") or {}
+    question = str(task.get("question", "(unknown)")).strip()
+    shape_spec = v0_meta.get("shape_spec")
+    plan_len = len(v0_meta.get("plan") or [])
+    max_steps = max(plan_len, 5)  # planner 默认 5；若 plan 实际更长以 plan 为准
+
+    knowledge_md = (task_input or {}).get("knowledge_md") or ""
+    knowledge_text = knowledge_md[:1500] if knowledge_md else "(none)"
+
+    return _INITIAL_PLAN_PROMPT.format(
+        max_steps=max_steps,
+        question=question,
+        schema_summary=_RUNTIME_SCHEMA_PLACEHOLDER,
+        knowledge=knowledge_text,
+        shape_spec=json.dumps(shape_spec, ensure_ascii=False) if shape_spec else "(no spec)",
+    )
+
+
+def _render_planner_replan_prompt(
+    trace: dict[str, Any],
+    task_input: dict[str, Any] | None,
+    replan_event: dict[str, Any],
+) -> str:
+    try:
+        from data_agent_v0.planner import _REPLAN_PROMPT
+    except Exception as exc:  # noqa: BLE001
+        return f"(planner module not importable: {exc!r})"
+
+    v0_meta = trace.get("v0_meta") or {}
+    task = (task_input or {}).get("task") or {}
+    question = str(task.get("question", "(unknown)")).strip()
+    sig = str(replan_event.get("signature", "(unknown)"))
+    plan_len = len(v0_meta.get("plan") or [])
+    max_steps = max(plan_len, 5)
+
+    # recent_observations: replan 触发时取 at_step 之前最近 3 步的 observation
+    at = int(replan_event.get("at_step") or 0)
+    steps = trace.get("steps") or []
+    obs_window = [s.get("observation") or {} for s in steps[:at]][-3:]
+    obs_text = json.dumps(obs_window, ensure_ascii=False, indent=2, default=str)[:2000]
+
+    remaining_plan = (
+        "(remaining plan at replan point is not stored in trace.json — "
+        "orchestrator overwrites v0_meta.plan with each replan. "
+        "Only the *final* plan is shown in the output card below.)"
+    )
+
+    return _REPLAN_PROMPT.format(
+        max_steps=max_steps,
+        question=question,
+        schema_summary=_RUNTIME_SCHEMA_PLACEHOLDER,
+        failure_signature=sig,
+        recent_observations=obs_text,
+        remaining_plan=remaining_plan,
+    )

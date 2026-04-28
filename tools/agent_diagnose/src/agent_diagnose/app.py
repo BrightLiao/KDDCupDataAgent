@@ -23,7 +23,7 @@ from agent_diagnose.data import (
 )
 from agent_diagnose.diff import diff_csv
 from agent_diagnose.markdown_helper import md_to_html
-from agent_diagnose.normalize import detect_agent_kind, normalize_steps
+from agent_diagnose.normalize import detect_agent_kind, extract_planner_calls, normalize_steps
 from agent_diagnose.scoring import score_run_lazy
 from agent_diagnose.stats import (
     RunKPIs,
@@ -155,6 +155,7 @@ def task_replay(request: Request, task_id: str, run: str = ""):
     knowledge_html = md_to_html(knowledge_md) if knowledge_md else None
 
     steps = normalize_steps(trace, agent_kind, task_input=task_input)
+    planner_calls = extract_planner_calls(trace, task_input)
 
     pred = load_prediction_csv(selected_run.run_id, task_id)
     gold = load_gold_csv(task_id)
@@ -184,6 +185,7 @@ def task_replay(request: Request, task_id: str, run: str = ""):
             "runs": all_runs,
             "trace": trace,
             "steps": steps,
+            "planner_calls": planner_calls,
             "v0_meta": v0_meta,
             "task_input": task_input,
             "knowledge_html": knowledge_html,

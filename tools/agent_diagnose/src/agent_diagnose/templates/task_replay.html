@@ -51,12 +51,7 @@
   </details>
   {% endif %}
 
-  {% if v0_meta and v0_meta.get('plan') %}
-  <details class="mt-2">
-    <summary>Plan ({{ v0_meta.plan|length }} steps)</summary>
-    <pre class="text-mono">{{ v0_meta.plan | tojson(indent=2) }}</pre>
-  </details>
-  {% endif %}
+  {# Plan 卡（替代旧的 Plan JSON dump）：每次 planner 调用一张，含 prompt + 输出 plan #}
 
   {% if knowledge_html %}
   <details class="mt-4">
@@ -70,6 +65,15 @@
   <div class="timeline-side">
     <div class="panel" style="margin-bottom: 0;">
       <h3 style="margin: 0 0 8px; font-size: 13px;">Steps</h3>
+      {% if planner_calls %}
+        {% for pc in planner_calls if pc.kind == 'create_plan' %}
+        <a class="timeline-item planner" href="#planner-{{ loop.index }}">
+          <span class="step-no">P</span>
+          <span class="ok-mark planner-mark"></span>
+          <span class="text-mono" style="font-size: 12px;">init plan</span>
+        </a>
+        {% endfor %}
+      {% endif %}
       {% for step in steps %}
         {% set kind = 'submit' if step.submitted else ('ok' if step.ok else 'fail') %}
         <a class="timeline-item" href="#step-{{ step.step_index }}">
@@ -77,16 +81,38 @@
           <span class="ok-mark {{ kind }}"></span>
           <span class="text-mono" style="font-size: 12px;">{{ step.action[:18] }}</span>
         </a>
+        {% for pc in planner_calls if pc.kind == 'replan' and pc.at_step == step.step_index %}
+        <a class="timeline-item planner" href="#planner-replan-{{ pc.at_step }}-{{ loop.index }}">
+          <span class="step-no">R</span>
+          <span class="ok-mark planner-mark"></span>
+          <span class="text-mono" style="font-size: 12px;">replan #{{ pc.replan_event.get('replan_count', '?') }}</span>
+        </a>
+        {% endfor %}
       {% endfor %}
       {% if not steps %}<div class="empty">无 step</div>{% endif %}
     </div>
   </div>
 
   <div>
+    {# Planner LLM 调用 —— 在 step #1 之前显示初始 plan，每个 replan_event 后插入对应 replan 卡 #}
+    {% set initial_planner = planner_calls | selectattr("kind", "equalto", "create_plan") | list %}
+    {% for pc in initial_planner %}
+      {% with card_anchor='planner-' ~ loop.index %}
+        {% include "partials/planner_card.html" %}
+      {% endwith %}
+    {% endfor %}
+
     {% for step in steps %}
       {% with step_anchor='step-' ~ step.step_index %}
         {% include "partials/step_card.html" %}
       {% endwith %}
+      {# replan 在该步执行结束后触发，下一次循环步骤前插入 #}
+      {% set replans_here = planner_calls | selectattr("kind", "equalto", "replan") | selectattr("at_step", "equalto", step.step_index) | list %}
+      {% for pc in replans_here %}
+        {% with card_anchor='planner-replan-' ~ pc.at_step ~ '-' ~ loop.index %}
+          {% include "partials/planner_card.html" %}
+        {% endwith %}
+      {% endfor %}
     {% endfor %}
 
     <div class="panel">
