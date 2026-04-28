@@ -391,6 +391,21 @@ def _reconstruct_prompt(
     msgs.append(ReconstructedMessage(role="system", content=system_content, label="system"))
     msgs.append(ReconstructedMessage(role="user", content=task_content, label="user (task)"))
 
+    # ---- Plan-Executor branch: 注入初始 plan 消息（参 orchestrator._format_plan_message）----
+    v0_meta = trace.get("v0_meta") or {}
+    is_plan_executor = (
+        agent_kind in _CODEACT_AGENT_KINDS
+        and v0_meta.get("routed_branch") == "plan_executor"
+    )
+    plan_steps = v0_meta.get("plan") or [] if is_plan_executor else []
+    replan_events = v0_meta.get("replan_events") or [] if is_plan_executor else []
+    if plan_steps:
+        msgs.append(ReconstructedMessage(
+            role="user",
+            content=_format_plan_text(plan_steps),
+            label="user (initial plan)",
+        ))
+
     # ---- prior turns ----
     for i, ps in enumerate(prior_steps, start=1):
         raw = str(ps.get("raw_response", ""))
@@ -408,7 +423,35 @@ def _reconstruct_prompt(
             content=obs_text,
             label=f"user (obs {i})",
         ))
+        # Replan event 在 step i 失败后注入下一轮 prompt（at_step == i 的事件在该步 obs 之后）
+        for ev in replan_events:
+            if int(ev.get("at_step") or 0) == i:
+                msgs.append(ReconstructedMessage(
+                    role="user",
+                    content=(
+                        f"Plan revised after consecutive `{ev.get('signature')}` failures "
+                        f"(replan #{ev.get('replan_count')}). "
+                        f"[note] trace.json 只保留最终 plan，历史 plan 已被覆盖。"
+                    ),
+                    label=f"user (replan @ step {ev.get('at_step')})",
+                ))
     return msgs
+
+
+def _format_plan_text(plan_steps: list[dict[str, Any]]) -> str:
+    """复刻 orchestrator._format_plan_message 的格式（操作 dict 而非 PlanStep）。"""
+    if not plan_steps:
+        return "(no plan)"
+    lines = ["Here is the plan to follow:"]
+    for i, s in enumerate(plan_steps, 1):
+        lines.append(f"{i}. {s.get('description', '')}")
+        sc = s.get("success_criterion")
+        if sc:
+            lines.append(f"   Success: {sc}")
+    lines.append(
+        "\nExecute the plan one step at a time. Reply with one ```python code block per turn."
+    )
+    return "\n".join(lines)
 
 
 def _make_task_record(
