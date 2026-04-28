@@ -246,6 +246,21 @@ structure (and nothing else):
   SELECT clause there is authoritative — match its column count and ordering literally.
   If ambiguous, output null.
 
+  AVOID these common over-reaches:
+    * Foreign-key fields: schema columns named `*_id`, `link_to_*`, `*_ref` are
+      pointers, NOT answers. Question "what's X's major?" + schema has `link_to_major`
+      (FK) → output ["major_name"] (target table's name field), NOT ["link_to_major"].
+      The plan must follow the link to retrieve the human-readable value.
+    * Implicit subjects from pronouns: "give their consumption" / "their height" —
+      the pronoun "their" refers back to a filtered subject. Do NOT add a subject
+      column like `customer_id` or `name` unless the question explicitly says
+      "list X and their Y" or "for each X, the Y". Singular questions about a
+      filtered group ask only for the metric.
+    * Tally / count adverbs without explicit grouping: "tally the X" or "count the X"
+      usually means return X values (as a multiset, duplicates indicate frequency),
+      NOT (X, count) two-column aggregate. Only output `count` when the question
+      explicitly says "for each X give its count" or "X with frequency".
+
 - "expected_row_count": integer ONLY when the question explicitly states a numeric
   cap ("top 5", "the 3 largest", "first 10"). For phrases like "list all X" or
   "state the date when Y" → null. Singular English phrasing does NOT imply count=1.

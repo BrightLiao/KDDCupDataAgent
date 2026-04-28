@@ -27,6 +27,24 @@ Output a JSON object with these fields:
   If the question is ambiguous about exact column count, output null. Do not
   include columns the question doesn't ask for.
 
+  AVOID these common over-reaches:
+    * Foreign-key fields: schema columns named `*_id`, `link_to_*`, `*_ref` are
+      pointers, NOT semantic answers. Question "what's X's major?" and schema
+      has `link_to_major` (FK to majors table) → output ["major_name"] (the
+      target's actual name field), NOT ["link_to_major"]. The plan must follow
+      the link to get the human-readable value.
+    * Implicit subjects from pronouns: question "give their consumption" or
+      "their height" — the pronoun "their" refers back to a subject already
+      filtered (e.g., specific people). Do NOT add a subject column like
+      `customer_id` or `name` unless the question explicitly says "list X and
+      their Y" or "for each X, the Y". Singular questions about a filtered
+      group only ask for the metric, not the subject.
+    * Tally / count adverbs without explicit grouping: "tally the X" or "count
+      the X" usually means return the X values themselves (as a multiset, with
+      duplicates indicating frequency) rather than a (X, count) two-column
+      aggregate. Only output a `count` column when the question explicitly
+      says "for each X give its count" or "X with frequency / occurrences".
+
 - "expected_row_count": an integer ONLY when the question explicitly states a numeric
   cap, like "top 5", "the 3 largest", "5 most recent", "first 10". Examples:
     * "list the top 5 customers" → 5
