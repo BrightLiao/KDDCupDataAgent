@@ -9,6 +9,7 @@ Hard/Extreme → Plan-Executor，连续 N 步同错触发 replan，5 次 replan 
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -55,20 +56,41 @@ class Orchestrator:
     def run(self, task: PublicTask) -> tuple[AgentRunResult, _OrchestratorTrace]:
         ot = _OrchestratorTrace()
 
-        # L3: extract shape spec via one LLM call before opening REPL
-        shape_spec = extract_shape_spec(task.question, self.model)
-        ot.shape_spec = shape_spec
-
-        # Open REPL with preload + shape_spec
+        # 顺序：先开 REPL（拿 schema + knowledge）→ 难度路由调 LLM 算 shape(+plan) → 注入 REPL
+        # 这样 shape extractor 能看到完整 schema/knowledge，避免列名歧义错。
         repl = TaskRepl(
             task.context_dir,
             preload_enabled=True,
             preload_max_csv_mb=self.config.preload.max_csv_size_mb,
-            shape_spec=shape_spec,
+            shape_spec=None,  # 稍后通过 repl.set_shape_spec() 注入
         )
         try:
             schema_summary = repl.preload_summary
             knowledge = repl.knowledge if self.config.preload.inject_knowledge_md else {}
+            schema_text = _render_summary_short(schema_summary)
+            knowledge_text = _render_knowledge_full(knowledge)
+
+            difficulty = (task.difficulty or "").lower()
+            initial_plan: list[Any] = []
+            if difficulty in self.config.planner.enable_for:
+                ot.routed_branch = "plan_executor"
+                # 合一 LLM 调用：单次同时输出 shape_spec + plan
+                shape_spec, initial_plan = self.planner.create_plan_with_shape(
+                    question=task.question,
+                    schema_summary_text=schema_text,
+                    knowledge_text=knowledge_text,
+                )
+            else:
+                ot.routed_branch = "flat"
+                # 仅 shape：flat 路径不需要 plan
+                shape_spec = extract_shape_spec(
+                    task.question,
+                    self.model,
+                    knowledge_md=knowledge_text,
+                    schema_summary_text=schema_text,
+                )
+            ot.shape_spec = shape_spec
+            repl.set_shape_spec(shape_spec)
 
             system_prompt = build_codeact_system_prompt(
                 schema_summary=schema_summary,
@@ -82,12 +104,11 @@ class Orchestrator:
                 step_timeout_seconds=self.config.executor.step_timeout_seconds,
             )
 
-            difficulty = (task.difficulty or "").lower()
-            if difficulty in self.config.planner.enable_for:
-                ot.routed_branch = "plan_executor"
-                run_result = self._run_plan_executor(task, executor, system_prompt, ot)
+            if ot.routed_branch == "plan_executor":
+                run_result = self._run_plan_executor(
+                    task, executor, system_prompt, ot, initial_plan=initial_plan
+                )
             else:
-                ot.routed_branch = "flat"
                 run_result = executor.run_flat(
                     task,
                     system_prompt=system_prompt,
@@ -106,6 +127,8 @@ class Orchestrator:
         executor: CodeActExecutor,
         system_prompt: str,
         ot: _OrchestratorTrace,
+        *,
+        initial_plan: list[Any],
     ) -> AgentRunResult:
         cfg = self.config.planner
         agent_cfg_max = self.config.agent.max_steps  # global hard cap on total steps
@@ -121,13 +144,8 @@ class Orchestrator:
         global_step_index = 0
         recent_observations: list[dict[str, Any]] = []
 
-        # Initial plan
-        plan = self.planner.create_plan(
-            question=task.question,
-            schema_summary_text=_render_summary_short(executor.repl.preload_summary),
-            knowledge_text=_render_knowledge_short(executor.repl.knowledge),
-            shape_spec=ot.shape_spec,
-        )
+        # Plan 由调用方（run()）通过合一 LLM 调用预先生成，这里直接使用。
+        plan = initial_plan
         ot.plan = [s.to_dict() for s in plan]
         if plan:
             messages.append(
@@ -296,15 +314,42 @@ def _render_summary_short(summary: dict[str, Any]) -> str:
     return "\n".join(parts) if parts else "(empty)"
 
 
-def _render_knowledge_short(knowledge: dict[str, str], max_chars: int = 1500) -> str:
+def _render_knowledge_full(knowledge: dict[str, str], max_chars: int = 8000) -> str:
+    """按 '\\n## ' 章节切分；超长时按整章节单位丢弃尾部章节。
+
+    旧实现按 char 硬截到 1500 chars，砍掉了 73% 的 metric 定义 / 例子 SQL /
+    歧义解决章节。新实现：
+      - cap = 8000 chars（实际 knowledge.md p95 ≈ 6.6k，留 buffer）
+      - 多文件按 dict 序保留，每文件独立切
+      - 每文件按 '\\n## ' 切段，超 budget 时按段单位 drop tail（不 mid-sentence 截）
+      - 单段 > budget 才硬截（边界 case）
+    qwen-plus 32k context 完全装得下。
+    """
     parts: list[str] = []
     used = 0
     for name, body in knowledge.items():
-        snippet = body.strip()
-        if used + len(snippet) > max_chars:
-            snippet = snippet[: max_chars - used]
-        parts.append(f"### {name}\n{snippet}")
-        used += len(snippet)
         if used >= max_chars:
             break
+        body = body.strip()
+        if not body:
+            continue
+        # 按 '\n## ' 切段（H2 标题）；保留首段（H1 + 引言）
+        sections = re.split(r"(?=\n## )", body)
+        kept: list[str] = []
+        for sec in sections:
+            sec = sec.strip()
+            if not sec:
+                continue
+            sec_len = len(sec) + 2  # 段落分隔双换行
+            if used + sec_len > max_chars:
+                # 段太长才硬截，否则整段丢
+                if not kept and sec_len < max_chars * 2:
+                    truncated = sec[: max_chars - used - 20] + "\n... [truncated]"
+                    kept.append(truncated)
+                    used = max_chars
+                break
+            kept.append(sec)
+            used += sec_len
+        if kept:
+            parts.append(f"### {name}\n\n" + "\n\n".join(kept))
     return "\n\n".join(parts) if parts else "(none)"

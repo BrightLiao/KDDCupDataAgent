@@ -62,6 +62,9 @@ def _build_default_namespace(
 
     L2 的 preload_into_namespace 会在此基础上追加 df_<name> / json_<name> / conn_<name>。
     submit() 内置 L3 校验 + 归一化（与 scorer 共享 normalize_value）。
+
+    shape_spec 存在 namespace 私有键 `__shape_spec__` 下；可由主进程通过
+    set_shape_spec() 后续动态更新（必须保证 _submit 每次提交时读最新值）。
     """
     import json as _json  # noqa: F401
     import sqlite3 as _sqlite3  # noqa: F401
@@ -83,6 +86,7 @@ def _build_default_namespace(
         "np": _np,
         "json": _json,
         "sqlite3": _sqlite3,
+        "__shape_spec__": shape_spec,
     }
 
     def _submit(value: Any) -> None:
@@ -98,8 +102,9 @@ def _build_default_namespace(
                 "submit() expects pandas DataFrame or {'columns': [...], 'rows': [[...]]}"
             )
 
-        # Step 2: shape validation (may truncate rows in-place)
-        ok, err, info = validate_submit(cols, rows, shape_spec)
+        # Step 2: shape validation — read latest shape_spec from namespace
+        # (主进程可在 REPL 起来后通过 set_shape_spec 更新)
+        ok, err, info = validate_submit(cols, rows, ns.get("__shape_spec__"))
         if not ok:
             # Surface as exception → LLM sees in next observation, can retry
             raise ValueError(err)
@@ -164,6 +169,12 @@ def _worker_main(
             cmd = cmd_q.get()
             if cmd is None:
                 break
+            # 控制命令（非代码执行）：op 字段优先匹配
+            op = cmd.get("op")
+            if op == "set_shape_spec":
+                namespace["__shape_spec__"] = cmd.get("spec")
+                result_q.put({"event": "set_shape_spec_ok"})
+                continue
             code = cmd.get("code", "")
             timeout = int(cmd.get("timeout", 60))
 
@@ -269,6 +280,25 @@ class TaskRepl:
     @property
     def knowledge(self) -> dict[str, str]:
         return dict(self._ready_payload.get("knowledge") or {})
+
+    def set_shape_spec(self, spec: dict[str, Any] | None, *, timeout: int = 5) -> None:
+        """REPL 已 ready 后动态设置/更新 shape_spec（守卫读取它的最新值）。
+
+        允许主进程先开 REPL 拿到 preload schema/knowledge，再调 LLM 算 shape_spec，
+        最后注入回 worker —— 避免 shape extractor 在没有 schema/knowledge 时盲算。
+        """
+        if self._closed:
+            raise RuntimeError("REPL is closed")
+        if not self._proc.is_alive():
+            raise RuntimeError("REPL worker is no longer alive")
+        self._cmd_q.put({"op": "set_shape_spec", "spec": spec})
+        try:
+            payload = self._result_q.get(timeout=timeout)
+        except Exception as exc:  # queue.Empty
+            raise RuntimeError(f"REPL did not ack set_shape_spec within {timeout}s") from exc
+        if payload.get("event") != "set_shape_spec_ok":
+            raise RuntimeError(f"Unexpected ack for set_shape_spec: {payload}")
+        self.shape_spec = spec
 
     def execute(self, code: str, *, timeout: int = 60) -> ReplResult:
         if self._closed:

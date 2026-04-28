@@ -15,10 +15,17 @@ You are parsing a data-analysis question to extract the expected answer SHAPE
 
 Output a JSON object with these fields:
 
-- "expected_columns": list of short snake_case strings naming the SEMANTIC of each
-  column the answer should have, ordered as the question asks
-  (e.g., ["patient_id", "diagnosis"]). If the question is ambiguous about exact
-  column count, output null. Do not include columns the question doesn't ask for.
+- "expected_columns": list of short snake_case strings naming each column the answer
+  should have, ordered as the question asks (e.g., ["patient_id", "diagnosis"]).
+  Use the actual schema field names (or close synonyms) — DO NOT collapse multiple
+  schema fields into a single semantic column:
+    * Question says "full name" and schema has `first_name` + `last_name`
+      → output ["first_name", "last_name"]  (two columns, NOT one "full_name")
+    * Question says "score" but schema field is named `goal` → output ["goal"]
+  When `knowledge.md` provides exemplar SQL or example queries, the SELECT clause
+  there is authoritative — match its column count and ordering literally.
+  If the question is ambiguous about exact column count, output null. Do not
+  include columns the question doesn't ask for.
 
 - "expected_row_count": an integer ONLY when the question explicitly states a numeric
   cap, like "top 5", "the 3 largest", "5 most recent", "first 10". Examples:
@@ -40,16 +47,32 @@ Output a JSON object with these fields:
 
 Output exactly one fenced ```json ... ``` block. No other text.
 
-Question:
+## Question
+
 {question}
+{schema_section}{knowledge_section}
 """.strip()
 
 _FENCE_RE = re.compile(r"```json\s*\n?(.*?)```", re.DOTALL)
 
 
-def extract_shape_spec(question: str, model: ModelAdapter) -> dict[str, Any]:
-    """单次 LLM 调用提取形态约束。失败时返回 fail-open 空 spec。"""
-    prompt = _SHAPE_PROMPT.format(question=question.strip())
+def extract_shape_spec(
+    question: str,
+    model: ModelAdapter,
+    *,
+    knowledge_md: str | None = None,
+    schema_summary_text: str | None = None,
+) -> dict[str, Any]:
+    """单次 LLM 调用提取形态约束。失败时返回 fail-open 空 spec。
+
+    knowledge_md / schema_summary_text 当非空时会注入 prompt，帮助消歧
+    （如 "full name" → 多列 / 字段名错配）。两者都为 None 时退回旧行为（仅看 question）。
+    """
+    prompt = _SHAPE_PROMPT.format(
+        question=question.strip(),
+        schema_section=_render_section("Schema fields (column names that appear in data)", schema_summary_text),
+        knowledge_section=_render_section("Domain knowledge (from knowledge.md and doc/*.md)", knowledge_md),
+    )
     try:
         raw = model.complete([ModelMessage(role="user", content=prompt)])
     except Exception as exc:  # noqa: BLE001
@@ -65,6 +88,15 @@ def extract_shape_spec(question: str, model: ModelAdapter) -> dict[str, Any]:
     if not isinstance(payload, dict):
         return _empty_spec(error="not_a_json_object", raw=raw[:200])
 
+    return _parse_shape_spec(payload)
+
+
+def _parse_shape_spec(payload: dict[str, Any]) -> dict[str, Any]:
+    """从 LLM 返回的 dict 中规整 shape_spec 字段，强制 row_count_kind 一致性。
+
+    供 extract_shape_spec 与 planner.create_plan_with_shape 共用 —— 两者输出格式相同，
+    只是合一调用把 shape_spec 嵌在更大的 JSON 对象里。
+    """
     expected_columns = payload.get("expected_columns")
     if expected_columns is not None:
         if isinstance(expected_columns, list) and all(isinstance(c, str) for c in expected_columns):
@@ -141,6 +173,13 @@ def validate_submit(
 
     info["observed_rows"] = len(rows)
     return True, None, info
+
+
+def _render_section(title: str, body: str | None) -> str:
+    """优雅拼接 prompt 节：body 非空时拼 '\\n\\n## {title}\\n\\n{body}'，否则空字符串。"""
+    if not body or not body.strip():
+        return ""
+    return f"\n\n## {title}\n\n{body.strip()}"
 
 
 def _empty_spec(*, error: str | None = None, raw: str | None = None) -> dict[str, Any]:
