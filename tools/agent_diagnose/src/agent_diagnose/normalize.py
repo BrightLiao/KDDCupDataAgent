@@ -541,21 +541,39 @@ def _render_planner_initial_prompt(
     trace: dict[str, Any],
     task_input: dict[str, Any] | None,
 ) -> str:
+    """重建 planner 初始 LLM 调用的 prompt。F1+F2 之后，plan_executor 路径走
+    合一调用 _INITIAL_PLAN_AND_SHAPE_PROMPT（同时输出 shape+plan）；老 trace
+    可能用旧 _INITIAL_PLAN_PROMPT。优先尝试新模板，缺失时降级到旧。
+    """
+    v0_meta = trace.get("v0_meta") or {}
+    task = (task_input or {}).get("task") or {}
+    question = str(task.get("question", "(unknown)")).strip()
+    plan_len = len(v0_meta.get("plan") or [])
+    max_steps = max(plan_len, 5)
+    knowledge_md = (task_input or {}).get("knowledge_md") or ""
+    # F2 cap 8000 与 orchestrator._render_knowledge_full 对齐
+    knowledge_text = knowledge_md[:8000] if knowledge_md else "(none)"
+
+    # 优先用合一模板（F1+F2 之后的真实 prompt）
+    try:
+        from data_agent_v0.planner import _INITIAL_PLAN_AND_SHAPE_PROMPT  # type: ignore
+        return _INITIAL_PLAN_AND_SHAPE_PROMPT.format(
+            max_steps=max_steps,
+            question=question,
+            schema_summary=_RUNTIME_SCHEMA_PLACEHOLDER,
+            knowledge=knowledge_text,
+        )
+    except ImportError:
+        pass
+    except Exception as exc:  # noqa: BLE001
+        return f"(planner merged module unavailable: {exc!r})"
+
+    # 老路径：分离调用的 _INITIAL_PLAN_PROMPT，需要 shape_spec 占位
     try:
         from data_agent_v0.planner import _INITIAL_PLAN_PROMPT
     except Exception as exc:  # noqa: BLE001
         return f"(planner module not importable: {exc!r})"
-
-    v0_meta = trace.get("v0_meta") or {}
-    task = (task_input or {}).get("task") or {}
-    question = str(task.get("question", "(unknown)")).strip()
     shape_spec = v0_meta.get("shape_spec")
-    plan_len = len(v0_meta.get("plan") or [])
-    max_steps = max(plan_len, 5)  # planner 默认 5；若 plan 实际更长以 plan 为准
-
-    knowledge_md = (task_input or {}).get("knowledge_md") or ""
-    knowledge_text = knowledge_md[:1500] if knowledge_md else "(none)"
-
     return _INITIAL_PLAN_PROMPT.format(
         max_steps=max_steps,
         question=question,
