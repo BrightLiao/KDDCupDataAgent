@@ -41,6 +41,16 @@ AGENT_KIND_OVERRIDES: list[tuple[str, str]] = [
     ("v5_F1F2tuned", "agent_v0_tuned"),
 ]
 
+# 同一 kind 下哪些 run 算 "canonical 3-seed"，参与 5维卡 / 矩阵 / Δ 列聚合的均值。
+# 不命中 substring 的 run 仍出现在 run 表中（保留 debug 价值），但从聚合排除。
+# 值为子串；run_id 含此子串即 canonical。
+AGENT_KIND_CANONICAL: dict[str, str] = {
+    "baseline":     "_remote",  # 仅 demo_qwen35_baseline_remote* 算 canonical baseline
+    "baseline_v1":  "_remote",  # 仅 demo_qwen35_baseline_v1_remote* 算 canonical (排除 docker_verify)
+    "agent_v0":     "_remote",  # 仅 demo_qwen35_v0_remote* 算 canonical (排除 v0/_v2/_v3_full/_v4)
+    # agent_v0_tuned: 不在表里 = 全部参与（v5_F1F2tuned 三个 seed 已是 canonical）
+}
+
 REPORTS_DIR = REPO_ROOT / "reports"
 DATA_INPUT_DIR = REPO_ROOT / "data" / "demo" / "public" / "input"
 DATA_OUTPUT_DIR = REPO_ROOT / "data" / "demo" / "public" / "output"
@@ -51,6 +61,7 @@ __all__ = [
     "RUN_SOURCES",
     "AGENT_KIND_ORDER",
     "AGENT_KIND_OVERRIDES",
+    "AGENT_KIND_CANONICAL",
     "REPORTS_DIR",
     "DATA_INPUT_DIR",
     "DATA_OUTPUT_DIR",

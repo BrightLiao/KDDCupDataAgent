@@ -5,7 +5,7 @@ import math
 from dataclasses import dataclass, field
 from typing import Any
 
-from agent_diagnose.config import AGENT_KIND_ORDER
+from agent_diagnose.config import AGENT_KIND_CANONICAL, AGENT_KIND_ORDER
 from agent_diagnose.data import RunRef, load_trace
 from agent_diagnose.scoring import score_run_lazy
 
@@ -149,6 +149,8 @@ def kind_score_matrix(
     """
     by_kind: dict[str, list[RunKPIs]] = {}
     for k in kpis_list:
+        if not _is_canonical(k):
+            continue  # 非 canonical run 不进矩阵聚合（保留在 run 表里）
         by_kind.setdefault(k.run.agent_kind, []).append(k)
 
     out: dict[str, dict[str, dict[str, Any]]] = {}
@@ -262,10 +264,25 @@ def _mean_std(xs: list[float]) -> tuple[float, float]:
     return m, math.sqrt(var)
 
 
+def _is_canonical(kpi: RunKPIs) -> bool:
+    """命中 AGENT_KIND_CANONICAL 的 substring 即 canonical（参与聚合）。
+    kind 不在 dict 里的全部视为 canonical（默认全收）。"""
+    pattern = AGENT_KIND_CANONICAL.get(kpi.run.agent_kind)
+    if pattern is None:
+        return True
+    return pattern in kpi.run.run_id
+
+
 def aggregate_by_agent_kind(kpis_list: list[RunKPIs]) -> list[AggKPIs]:
-    """按 agent_kind 聚合多 seed run，返回按 AGENT_KIND_ORDER 排序的列表。"""
+    """按 agent_kind 聚合多 seed run，返回按 AGENT_KIND_ORDER 排序的列表。
+
+    AGENT_KIND_CANONICAL 决定每个 kind 下哪些 run 参与均值；run 表与 score
+    矩阵单元格点击仍展示所有 run，但 5维卡 / 矩阵聚合 / Δ 列只用 canonical。
+    """
     by_kind: dict[str, list[RunKPIs]] = {}
     for k in kpis_list:
+        if not _is_canonical(k):
+            continue
         by_kind.setdefault(k.run.agent_kind, []).append(k)
 
     agg_list: list[AggKPIs] = []
