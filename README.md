@@ -261,6 +261,7 @@ uv sync && ./run_diagnose.sh
 
 ## 文档导览
 
+- **每个版本的优化目标 / 改动 / 3-seed 验证结果** → [docs/VERSION_HISTORY.md](docs/VERSION_HISTORY.md)
 - 评测协议、列 multiset 比对的精确定义 → [docs/比赛简介.md](docs/比赛简介.md)
 - 2024–2026 相关工作综述（CodeAct / GEPA / DS-STAR / RSL-SQL / HEAR / AdaDocVQA）→ [docs/方案调研综述.md](docs/方案调研综述.md)
 - 4 层改进路线 + 主流 agent 架构对比 → [docs/改进路线图.md](docs/改进路线图.md)

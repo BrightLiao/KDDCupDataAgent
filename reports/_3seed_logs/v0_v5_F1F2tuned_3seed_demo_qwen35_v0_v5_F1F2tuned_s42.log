@@ -1,0 +1,9 @@
+warning: `VIRTUAL_ENV=/opt/homebrew/opt/python@3.14/Frameworks/Python.framework/Versions/3.14` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+/Users/brightliao/Source/DataProject/KDDCupDataAgent/data_agent_v0/src/data_agent_v0/preload.py:59: DtypeWarning: Columns (0: bank) have mixed types. Specify dtype option on import or set low_memory=False.
+  df = pd.read_csv(path)
+  v0 Benchmark ━━━ 100% | ok=39 fail=11 | elapsed 0:… | eta 0… rate=1.5 task/min
+Run output: 
+/Users/brightliao/Source/DataProject/KDDCupDataAgent/data_agent_v0/artifacts/run
+s/demo_qwen35_v0_v5_F1F2tuned_s42
+Tasks attempted: 50
+Succeeded tasks: 39
