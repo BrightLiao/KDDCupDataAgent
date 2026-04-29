@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any
 
 from agent_diagnose.config import (
+    AGENT_KIND_OVERRIDES,
     DATA_INPUT_DIR,
     DATA_OUTPUT_DIR,
     REPO_ROOT,
@@ -34,7 +35,12 @@ class RunRef:
 
 
 def discover_runs() -> list[RunRef]:
-    """扫描 RUN_SOURCES 下所有完成或半成品的 run，按 mtime 倒序。"""
+    """扫描 RUN_SOURCES 下所有完成或半成品的 run，按 mtime 倒序。
+
+    agent_kind 默认取 RUN_SOURCES 里目录映射的 kind；run_id 命中
+    AGENT_KIND_OVERRIDES 中的 substring 时改写为指定 kind，便于把同一物理目录里
+    不同 prompt 版本（如 v0 vs v0_tuned）在诊断面板里分列展示。
+    """
     runs: list[RunRef] = []
     for kind, root in RUN_SOURCES:
         if not root.is_dir():
@@ -43,10 +49,14 @@ def discover_runs() -> list[RunRef]:
             if not run_dir.is_dir():
                 continue
             run_id = run_dir.name
+            override_kind = next(
+                (ovk for sub, ovk in AGENT_KIND_OVERRIDES if sub in run_id),
+                None,
+            )
             runs.append(
                 RunRef(
                     run_id=run_id,
-                    agent_kind=kind,
+                    agent_kind=override_kind or kind,
                     runs_dir=run_dir,
                     scored_json=REPORTS_DIR / f"{run_id}_scored.json",
                 )

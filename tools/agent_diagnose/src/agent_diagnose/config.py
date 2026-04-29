@@ -31,7 +31,14 @@ AGENT_KIND_ORDER: list[str] = [
     "baseline_v1",
     "baseline_v2",
     "agent_v0",
+    "agent_v0_tuned",  # 同一份 v0 代码 + prompt 改动 (F1+F2)：shape 喂 knowledge+schema、plan/shape 合一
     "agent_v1",
+]
+
+# 同一物理目录里的不同 prompt 版本可以通过 run_id 子串映射到不同 agent_kind。
+# (substring, override_kind) —— 第一个命中的 substring 生效。空 list 表示按 RUN_SOURCES 默认。
+AGENT_KIND_OVERRIDES: list[tuple[str, str]] = [
+    ("v5_F1F2tuned", "agent_v0_tuned"),
 ]
 
 REPORTS_DIR = REPO_ROOT / "reports"
@@ -43,6 +50,7 @@ __all__ = [
     "REPO_ROOT",
     "RUN_SOURCES",
     "AGENT_KIND_ORDER",
+    "AGENT_KIND_OVERRIDES",
     "REPORTS_DIR",
     "DATA_INPUT_DIR",
     "DATA_OUTPUT_DIR",

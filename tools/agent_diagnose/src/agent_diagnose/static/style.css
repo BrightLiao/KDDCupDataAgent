@@ -515,11 +515,12 @@ table.run-table tbody tr:hover { background: var(--accent-dim); }
   letter-spacing: 0.02em;
   border: 1px solid transparent;
 }
-.kind-baseline    { background: #e0f2fe; color: #075985; border-color: #bae6fd; }
-.kind-baseline-v1 { background: #bae6fd; color: #0c4a6e; border-color: #7dd3fc; }
-.kind-baseline-v2 { background: #7dd3fc; color: #ffffff; border-color: #38bdf8; }
-.kind-agent-v0    { background: #ede9fe; color: #5b21b6; border-color: #ddd6fe; }
-.kind-agent-v1    { background: #ddd6fe; color: #4c1d95; border-color: #c4b5fd; }
+.kind-baseline       { background: #e0f2fe; color: #075985; border-color: #bae6fd; }
+.kind-baseline-v1    { background: #bae6fd; color: #0c4a6e; border-color: #7dd3fc; }
+.kind-baseline-v2    { background: #7dd3fc; color: #ffffff; border-color: #38bdf8; }
+.kind-agent-v0       { background: #ede9fe; color: #5b21b6; border-color: #ddd6fe; }
+.kind-agent-v0-tuned { background: #ddd6fe; color: #4c1d95; border-color: #c4b5fd; }
+.kind-agent-v1       { background: #c4b5fd; color: #ffffff; border-color: #a78bfa; }
 
 /* ========== Agent summary cards (one per row) ========== */
 .agent-card-row {
@@ -535,11 +536,12 @@ table.run-table tbody tr:hover { background: var(--accent-dim); }
   padding: 14px 16px;
   box-shadow: var(--shadow);
 }
-.agent-card.kind-baseline    { border-top-color: #0284c7; }
-.agent-card.kind-baseline-v1 { border-top-color: #0369a1; }
-.agent-card.kind-baseline-v2 { border-top-color: #075985; }
-.agent-card.kind-agent-v0    { border-top-color: #7c3aed; }
-.agent-card.kind-agent-v1    { border-top-color: #6d28d9; }
+.agent-card.kind-baseline       { border-top-color: #0284c7; }
+.agent-card.kind-baseline-v1    { border-top-color: #0369a1; }
+.agent-card.kind-baseline-v2    { border-top-color: #075985; }
+.agent-card.kind-agent-v0       { border-top-color: #7c3aed; }
+.agent-card.kind-agent-v0-tuned { border-top-color: #6d28d9; }
+.agent-card.kind-agent-v1       { border-top-color: #5b21b6; }
 
 .agent-card-head {
   display: flex; justify-content: space-between; align-items: center;
