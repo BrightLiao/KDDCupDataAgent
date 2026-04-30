@@ -70,6 +70,19 @@ CLAUDE.local.*.md
 # ---- 3-seed 控制脚本日志（运行时产物，非评测结果） ----
 reports/_3seed_logs/master*.log
 
+# ---- 早期 server-side 3-seed 运行产物（mbp 主线只入 v0_v5_F1F2tuned 系列） ----
+# 已 commit 的 v0_v5_F1F2tuned* 不受影响（gitignore 不撤销已 tracked 文件）
+reports/_3seed_logs/baseline*.log
+reports/_3seed_logs/v0_3seed_remote*.log
+reports/demo_qwen35_baseline_remote*_scored.json
+reports/demo_qwen35_baseline_v1_remote*_scored.json
+reports/demo_qwen35_v0_remote*_scored.json
+reports/docker_verify_*_scored.json
+
+# ---- diagnose tool runtime（pid / nohup log） ----
+tools/agent_diagnose/.diagnose.pid
+tools/agent_diagnose/diagnose.log
+
 # ---- 各 agent 包内 data 软链 (->../data, gitignored)，避免误提交悬空链接 ----
 data_agent_v0/data
 data_agent_baseline_v1/data
