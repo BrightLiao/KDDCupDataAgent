@@ -61,6 +61,14 @@ build/
 # ---- Claude Code session ----
 .claude/
 .playwright-mcp/
+# Per-developer local context (identity + current focus); see CLAUDE.md "Per-developer identity"
+# Each teammate keeps their own CLAUDE.local.<name>.md on the shared server.
+# The .example template is committed; per-user files are not.
+CLAUDE.local.*.md
+!CLAUDE.local.md.example
+
+# ---- 3-seed 控制脚本日志（运行时产物，非评测结果） ----
+reports/_3seed_logs/master*.log
 
 # ---- 各 agent 包内 data 软链 (->../data, gitignored)，避免误提交悬空链接 ----
 data_agent_v0/data

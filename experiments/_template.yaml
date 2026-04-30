@@ -1,0 +1,39 @@
+# 假设登记模板 — 每次实验前填写，跑完后回填结果
+# 文件名：experiments/<实验名>.yaml
+# 驱动类型选填：case_driven / logic_driven / data_driven
+
+experiment_id: ""
+date: ""
+version: ""
+author: ""
+
+# ============ 改了什么 ============
+what_changed: |
+  （描述具体改动，比如：给 agent 加了 schema 缓存、换了 prompt、调整了 step budget）
+
+# ============ 为什么改（驱动） ============
+driver:
+  type: "" # case_driven / logic_driven / data_driven
+  detail: |
+    - case_driven：从 xx 版本看到 xx 类错误 xx 个，分析根因是……
+    - logic_driven：用 xx 架构/算法/工具替代旧的 xx，理论上能……
+    - data_driven：统计发现 xx 类型 task 表现差，针对性优化
+
+# ============ 预期收益（描述性） ============
+expected:
+  gain: |
+    （比如：schema_misunderstanding 应明显减少、submission_rate 上涨）
+  risk: |
+    （可能副作用：token 消耗增加、其他类型错误增多）
+
+# ============ 结果（跑完后回填） ============
+result:
+  demo_all3_agree: null
+  demo_micro: null
+  demo_macro: null
+  hidden_micro: null
+  hidden_macro: null
+  failure_change: |
+    （比如：timeout 11→4，但新增 2 个 parse_error）
+  judgment: "" # hit / miss / surprise（阿策判断）
+  note: ""
