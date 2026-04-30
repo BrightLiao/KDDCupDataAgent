@@ -1,0 +1,40 @@
+# 由仓库根目录视角写（build context = repo root）
+**/__pycache__
+**/*.pyc
+**/.venv
+**/.pytest_cache
+**/.ruff_cache
+**/.mypy_cache
+**/*.egg-info
+**/.DS_Store
+
+# 各 agent 自己的运行物
+**/artifacts
+**/run_*.log
+**/*.runtime.yaml
+**/*.local.yaml
+**/*.local.yaml.bak
+
+# 仓库级
+.git
+.env
+.env.*
+.copilot
+.vscode
+.cursor
+data
+reports
+docs
+tools
+config
+scripts
+notebooks
+outputs
+
+# data_agent_baseline_v1（不需要进 v0 镜像）
+data_agent_baseline_v1
+
+# 仅文档（不进镜像），但 hatchling 需要每个包根 README.md 才能 editable-install
+**/*.md
+!data_agent_v0/README.md
+!kddcup2026-starter-kit/README.md
