@@ -1,5 +1,6 @@
 # ---- Data (large, not in VCS) ----
-data/
+data/*
+!data/claude_trajectory/
 eval_local/
 artifacts/
 kddcup2026-starter-kit/data
