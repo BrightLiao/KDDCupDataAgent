@@ -1,0 +1,20 @@
+# Local context for Claude Code
+
+> All teammates share this Linux server (and likely the same `root` account), so a single
+> `CLAUDE.local.md` cannot disambiguate users. Convention: each teammate keeps their own
+> file named `CLAUDE.local.<short-name>.md` (e.g. `CLAUDE.local.brightliao.md`). All such
+> files are gitignored; only this `.example` is committed.
+>
+> At the start of each CC session, the user identifies themselves; CC then reads the
+> matching `CLAUDE.local.<name>.md`. Update yours when your focus shifts — stale entries
+> mislead other teammates' CC instances about ownership.
+
+- **Name**: <e.g. 申昊 (shenhao)>
+- **Role**: <lead | contributor | learning>
+- **Where to find my current task / focus / hands-off scope**:
+  - 单一真相源是仓库根的 [`docs/PHASE_PLAN.md`](docs/PHASE_PLAN.md)。
+  - 文件开头的 **Current Phase** 段落里"团队成员与分工"和"Task 清单"两张表中我那一行就是当前授权范围。
+  - 历史 phase 在文件后半部分，仅供回溯，不是当前授权范围。
+  - 不要把 task 内容复制到这里 —— phase 切换时只改 PHASE_PLAN.md，避免两处不一致。
+- **Notes for CC**: <preferences, expertise level, anything that should shape CC's defaults。
+  比如 learning 角色应当请 CC 多解释"为什么"、不主动 git push / docker push、改动越界先 surface 等>
